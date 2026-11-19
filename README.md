@@ -84,6 +84,4 @@ Deploy the frontend, API, and worker as separate services. Use Neon PostgreSQL w
 - [System architecture and trust boundaries](docs/ARCHITECTURE.md)
 - [Database entities and migrations](docs/DATABASE_SCHEMA.md)
 - [API and backend behavior](docs/BACKEND.md)
-- [Environment, Docker, GitHub App, and deployment](docs/DEPLOYMENT.md)
 - [Feature verification matrix and test report](docs/VERIFICATION.md)
-- [Hackathon demonstration script](docs/DEMO_SCRIPT.md)
