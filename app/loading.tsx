@@ -1,0 +1,1 @@
+export default function Loading(){return <main id="main" className="page-public" role="status"><div className="skeleton skeleton-line"/><div className="loading-grid"><div className="skeleton"/><div className="skeleton"/><div className="skeleton"/></div><span className="sr-only">Loading…</span></main>;}

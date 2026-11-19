@@ -1,0 +1,24 @@
+{
+  "version": "httpx-historical-v1",
+  "repository": "encode/httpx",
+  "selection_date": "2026-11-19",
+  "purpose": "Bounded historical engineering-decision reconstruction; not a representative benchmark",
+  "selection_method": "GitHub search API: created before 2024, substantial comment counts; purposive selection for API design debates, rejected options and linked implementation PRs. No newest-first crawl.",
+  "selection_bias": "High-discussion purposive sample; not suitable for estimating repository-wide decision prevalence or extraction accuracy.",
+  "items": [
+    {"number": 108, "kind": "issue", "reason": "Retry policy and scope of transport vs application behavior"},
+    {"number": 302, "kind": "issue", "reason": "Certificate trust store defaults and portability alternatives"},
+    {"number": 304, "kind": "issue", "reason": "WebSocket support and project scope"},
+    {"number": 522, "kind": "issue", "reason": "Dropping synchronous API support debate"},
+    {"number": 572, "kind": "issue", "reason": "Follow-up synchronous API architecture"},
+    {"number": 717, "kind": "issue", "reason": "Custom JSON library extension policy"},
+    {"number": 1450, "kind": "issue", "reason": "Overall response timeout vs per-operation timeouts"},
+    {"number": 1522, "kind": "pull_request", "reason": "Transport API design and concrete code changes"},
+    {"number": 2252, "kind": "pull_request", "reason": "Removing rfc3986 dependency and URL implementation tradeoffs"},
+    {"number": 2423, "kind": "pull_request", "reason": "LineDecoder semantics vs stdlib splitlines performance"},
+    {"number": 2990, "kind": "pull_request", "reason": "URL percent-encoding behavior cleanup"},
+    {"number": 3022, "kind": "pull_request", "reason": "SSLContext configuration design alternatives"}
+  ],
+  "limits": {"discussions": 12, "pages_per_collection": 10, "files_pages": 30},
+  "coverage_policy": "Record every failed discussion or missing collection; no silent truncation. Source payload hashes and retrieval timestamps are stored in Neon. Current source snapshots may include later comments."
+}

@@ -1,0 +1,68 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redis-data:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+  postgres:
+    image: pgvector/pgvector:pg17
+    profiles: ["local-db"]
+    environment:
+      POSTGRES_DB: watermelon
+      POSTGRES_USER: watermelon
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD:?Set a random LOCAL_POSTGRES_PASSWORD in .env}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U watermelon"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+  api:
+    build: {context: ., dockerfile: Dockerfile.backend}
+    profiles: ["app"]
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in .env}
+      DATABASE_URL_UNPOOLED: ${DOCKER_DATABASE_URL_UNPOOLED:?Set DOCKER_DATABASE_URL_UNPOOLED in .env}
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", ".venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    restart: unless-stopped
+  worker:
+    build: {context: ., dockerfile: Dockerfile.backend}
+    profiles: ["app"]
+    command: .venv/bin/python -m backend.worker
+    env_file: .env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: ${DOCKER_DATABASE_URL:?Set DOCKER_DATABASE_URL in .env}
+      DATABASE_URL_UNPOOLED: ${DOCKER_DATABASE_URL_UNPOOLED:?Set DOCKER_DATABASE_URL_UNPOOLED in .env}
+    depends_on:
+      redis: {condition: service_healthy}
+    restart: unless-stopped
+  web:
+    build: {context: ., dockerfile: Dockerfile.web}
+    profiles: ["app"]
+    env_file: .env
+    environment:
+      API_BASE_URL: http://api:8000
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on: [api]
+    restart: unless-stopped
+volumes:
+  redis-data:
+  postgres-data:

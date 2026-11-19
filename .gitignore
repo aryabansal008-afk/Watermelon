@@ -1,0 +1,31 @@
+# Local dependencies and build output
+node_modules/
+.next/
+.next*/
+
+# Local secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+
+# Local Python environment and caches
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+
+# Test reports, screenshots, and run artifacts
+test-results/
+playwright-report/
+.artifacts/
+
+# OS and packaging artifacts
+.DS_Store
+*.egg-info/
+
+# Generated benchmark data (reference answers must stay out of Git)
+benchmarks/predictions/
+benchmarks/results/
+benchmarks/adjudications/*.json
+benchmarks/answer_keys/

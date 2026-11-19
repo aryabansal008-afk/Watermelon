@@ -1,0 +1,10 @@
+{
+  "name": "python-pep-rejected-alternatives",
+  "version": "2026-11-19-v2",
+  "sources": [
+    {"pep": 703, "split": "development", "topic_id": 22606, "topic_url": "https://discuss.python.org/t/pep-703-making-the-global-interpreter-lock-optional/22606", "reference_url": "https://peps.python.org/pep-0703/"},
+    {"pep": 723, "split": "development", "topic_id": 31151, "topic_url": "https://discuss.python.org/t/31151", "reference_url": "https://peps.python.org/pep-0723/"},
+    {"pep": 750, "split": "held-out", "topic_id": 71594, "topic_url": "https://discuss.python.org/t/pep750-template-strings-new-updates/71594", "reference_url": "https://peps.python.org/pep-0750/"},
+    {"pep": 824, "split": "held-out", "topic_id": 109161, "topic_url": "https://discuss.python.org/t/pep-824-none-coalescing-operators/109161", "reference_url": "https://peps.python.org/pep-0824/"}
+  ]
+}

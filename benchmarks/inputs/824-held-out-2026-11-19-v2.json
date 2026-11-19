@@ -1,0 +1,918 @@
+{
+  "version": "2026-11-19-v2",
+  "split": "held-out",
+  "source": "https://discuss.python.org/t/109161",
+  "records": [
+    {
+      "external_id": "302176",
+      "post_number": 1,
+      "url": "https://discuss.python.org/t/109161/1",
+      "created_at": "2026-09-21T22:33:06.562Z",
+      "updated_at": "2026-09-21T22:38:08.227Z",
+      "author": "cdce8p",
+      "body": "<p>Building on the ideas from [PEP reference omitted] and after many discussions over the years, I’m happy to present <strong><code>PEP 824: None-coalescing operators</code></strong>. Please be sure to also check out the discussion for the companion <a href=\"https://discuss.python.org/t/pep-823-none-aware-access-operators/109159\">PEP 823</a>.</p>\n<h2><a name=\"p-302176-abstract-1\" class=\"anchor\" href=\"#p-302176-abstract-1\" aria-label=\"Heading link\"></a>Abstract</h2>\n<p>This PEP proposes adding two new operators.</p>\n<ul>\n<li>The “<code>None</code>-coalescing” operator <code>??</code></li>\n<li>The “<code>None</code>-coalescing assignment” operator <code>??=</code></li>\n</ul>\n<p>The general idea is to provide a conditional operator, similar to <code>or</code>, which instead of truthiness, checks for <code>None</code> values.</p>\n<p>The “<code>None</code>-coalescing” operator evaluates the left-hand side, checks whether it is <code>not None</code>, and if not, returns the result. If the value is <code>None</code>, the right-hand side is evaluated and returned.</p>\n<p>The “<code>None</code>-coalescing assignment” operator will only assign the right-hand side to the left-hand side if the left-hand side evaluates to <code>None</code>.</p>\n<p>They are roughly equivalent to:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\"># a ?? b\n_t if ((_t := a) is not None) else b\n\n# a ??= b\nif a is None:\n    a = b\n</code></pre>\n<p>–<br>\nAn interactive demo is available here: <a href=\"https://pep823-and-pep824-demo.pages.dev/\" rel=\"noopener nofollow ugc\">https://pep823-and-pep824-demo.pages.dev/</a></p>\n<aside class=\"onebox allowlistedgeneric\" data-onebox-src=\"[PEP reference omitted]\n  <header class=\"source\">\n      <img src=\"https://us1.discourse-cdn.com/flex002/uploads/python1/original/3X/7/8/7808f673c94c5abc6cdd738548e39c7ae50dc418.png\" class=\"site-icon\" alt=\"\" data-dominant-color=\"979F6B\" width=\"16\" height=\"16\">\n\n      [PEP reference omitted]\n  </header>\n\n  <article class=\"onebox-body\">\n    <img width=\"200\" height=\"200\" src=\"https://us1.discourse-cdn.com/flex002/uploads/python1/original/3X/8/e/8eb386d43fc93f43e4e34ee56dd1c3ebf682e66d.png\" class=\"thumbnail onebox-avatar\" alt=\"\" data-dominant-color=\"9EAC81\">\n\n<h3>[PEP reference omitted]</h3>\n\n  <p>This PEP proposes adding two new operators.</p>\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n",
+      "id": "ce809d64378057e0ea2bf5f24d4b12a98d54fe93465d3875649e16981c11d6fb"
+    },
+    {
+      "external_id": "302204",
+      "post_number": 2,
+      "url": "https://discuss.python.org/t/109161/2",
+      "created_at": "2026-09-22T02:48:38.501Z",
+      "updated_at": "2026-09-22T02:48:38.501Z",
+      "author": "AlSweigart",
+      "body": "<p>Just to clarify, the splitting of PEP 505 into these two PEPs is so that they can be considered independently? As in, we could accept one but not the other?</p>",
+      "id": "0544f22ff70e2b34dcd479613ee2141a84835f12441bb501c8ca437e619a2b7d"
+    },
+    {
+      "external_id": "302219",
+      "post_number": 3,
+      "url": "https://discuss.python.org/t/109161/3",
+      "created_at": "2026-09-22T07:45:59.474Z",
+      "updated_at": "2026-09-22T07:45:59.474Z",
+      "author": "weixlu",
+      "body": "<p>I think using <code>??=</code> is a good idea. When I write code, I don’t use conditional expressions very often, for the reasons the PEP describes. In the code I work on, the difference between <code>age = user.age ?? \"unknown\"</code> and <code>age = user.age or \"unknown\"</code> feels small, since <code>0</code> is usually not a value I need to keep. That’s only my own experience, though. Using <code>??</code> does make the check more precise, because it filters out only <code>None</code>.</p>",
+      "id": "9e38f477d1cf6c4dd349e407a3f1a284b796abc4c7df82c63f7372511103911a"
+    },
+    {
+      "external_id": "302224",
+      "post_number": 4,
+      "url": "https://discuss.python.org/t/109161/4",
+      "created_at": "2026-09-22T09:37:26.109Z",
+      "updated_at": "2026-09-22T09:37:26.109Z",
+      "author": "cdce8p",
+      "body": "<aside class=\"quote no-group\" data-username=\"AlSweigart\" data-display-name=\"Al Sweigart\" data-post=\"2\" data-topic=\"109161\" data-full=\"true\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/alsweigart/48/12237_2.png\" class=\"avatar\"> Al Sweigart:</div>\n<blockquote>\n<p>Just to clarify, the splitting of PEP 505 into these two PEPs is so that they can be considered independently? As in, we could accept one but not the other?</p>\n</blockquote>\n</aside>\n<p>Correct. While they do share a theme and complement each other, it would be possible to only accept either one of the two.</p>",
+      "id": "50b4168ea4394e954562e7d7f4185b4975a518958a82f1fd47b16cafab8badb1"
+    },
+    {
+      "external_id": "302239",
+      "post_number": 5,
+      "url": "https://discuss.python.org/t/109161/5",
+      "created_at": "2026-09-22T10:13:36.505Z",
+      "updated_at": "2026-09-22T10:13:36.505Z",
+      "author": "mikeshardmind",
+      "body": "<p>Of the pair of proposals, I’m more enthusiastically positive about this one. I’m glad to see the intentional limiting of both to handling exactly <code>None</code>.</p>\n<p>Changing the existing None checks I have where 824 could be used is not something that would push me to upgrade minimum python versions any faster, but it is a real improvement and may help prevent people from using <code>or</code> when there is a potential falsey value they had not considered.</p>",
+      "id": "c14f7c0b5fdd9c1aaa558cb5a184621a329c3dd73d333faf1ea6d9e6d03bc2f7"
+    },
+    {
+      "external_id": "302250",
+      "post_number": 6,
+      "url": "https://discuss.python.org/t/109161/6",
+      "created_at": "2026-09-22T12:16:32.129Z",
+      "updated_at": "2026-09-22T12:16:32.129Z",
+      "author": "effigies",
+      "body": "<p>I would be very glad to see this accepted, and I am also glad to see it limited to exactly <code>None</code>. Extending to sentinels or other objects would replicate the pitfalls of <code>__bool__</code>.</p>\n<p>Just a note on the precedence:</p>\n<blockquote>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\"># x or y ?? 2\n(x or y) ?? 2\n\n# \"Hello\" if x ?? True else 0\n\"Hello\" if (x ?? True) else 0\n</code></pre>\n</blockquote>\n<p>and</p>\n<blockquote>\n<p>Furthermore, setting the precedence between <code>or</code> and conditional expressions matches other languages which have implemented the operator, like JS [PEP reference omitted] and C# [PEP reference omitted].</p>\n</blockquote>\n<p>This is correct, but the JS and C# examples are interesting in that <code>x || y ?? 2</code> is a type error in C# and a syntax error in JS. It may be worth exploring whether other languages permit intermixing with boolean operators, or if Python would be unique in this respect.</p>\n<p>That said, I find the JS behavior surprising and annoying, so agree with the current design that parentheses should remain optional when precedence matches intent.</p>",
+      "id": "303e2f804a564deffaf2a35cbcd6f213f27a8eda2bdcb5354950806c9c0cc8a3"
+    },
+    {
+      "external_id": "302258",
+      "post_number": 7,
+      "url": "https://discuss.python.org/t/109161/7",
+      "created_at": "2026-09-22T12:59:28.839Z",
+      "updated_at": "2026-09-22T12:59:28.839Z",
+      "author": "tusharc",
+      "body": "<p>Thank you for putting this PEP together. I support this. I think PEP 824 is clearer than earlier versions like PEP 505. I think splitting this + PEP 823 was a good idea. Like others in this thread, I appreciate the intentional decision to only handle <code>None</code> and not anything false-y.</p>\n<p>I think that, in practice, I would have more of a use for <a href=\"https://discuss.python.org/t/pep-823-none-aware-access-operators/109159\" class=\"inline-onebox\">PEP 823: None-aware access operators</a> ; but both PEPs describe features I miss every time I switch over from TypeScript.</p>",
+      "id": "24c38f5d1ed407968668c50e4ca43d2e8ccb83726018d5294dc705538e3b99b8"
+    },
+    {
+      "external_id": "302269",
+      "post_number": 8,
+      "url": "https://discuss.python.org/t/109161/8",
+      "created_at": "2026-09-22T14:17:40.287Z",
+      "updated_at": "2026-09-22T14:17:40.287Z",
+      "author": "Boss_1s",
+      "body": "<p>What if both <code>Coalesce</code> operators had their own dunder methods to change the check/assignment for <code>None</code> to something else like a custom <code>Sentinel</code> object? Would that be redundant or overly confusing?</p>\n<p>Something like:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">class Foo:\n    MISSING = sentinel(\"MISSING\")\n\n    def __init__(self, bar=MISSING) -&gt; None:\n        self.bar = bar\n\n    def __cgetattribute__(self, name, fallback): # ??\n        # None-coalescing becomes MISSING-coalescing\n        return fallback ?? self.name\n\n    def __csetattr__(self, name, value): # ??=\n        # None-coalescing assignment becomes MISSING-coalescing assignment\n        if self.__cgetattribute__(self, name) is MISSING:\n            super().__setattr__(name, value)\n\nobj = Foo()\n\nobj.bar ?? \"unknown\" # Returns \"unknown\"\n\nobj.bar ??= \"bax\" # obj.bar is now \"bax\"\nobj.bar ??= \"baq\" # obj.bar is still \"bax\"\n\nobj.bar ?? \"unknown\" # Returns \"bax\"\n        \n</code></pre>\n<p><small>(This example can be improved on)</small></p>",
+      "id": "d640420afe88c0873d646f5c47083541c100f0ac7e13e3434b4da93ca72b0702"
+    },
+    {
+      "external_id": "302274",
+      "post_number": 9,
+      "url": "https://discuss.python.org/t/109161/9",
+      "created_at": "2026-09-22T14:57:14.463Z",
+      "updated_at": "2026-09-22T14:57:14.463Z",
+      "author": "a-reich",
+      "body": "<p>I’m +1 or maybe +0.5 on this (PEP 823 would make a bit more of a difference for me), as a nice pragmatic convenience. I think it makes sense to keep the scope narrow and behavior simple by targeting only None.</p>\n<p>My only question is… how did you decide on this color for the bikeshed? <img src=\"https://emoji.discourse-cdn.com/apple/sweat_smile.png?v=15\" title=\":sweat_smile:\" class=\"emoji\" alt=\":sweat_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"> When defining new syntax fore a feature there are always lots of possibilities for how to “spell” it, especially when introducing the new ? symbol. Is the rationale basically that other languages use these two spellings for the same concepts?</p>",
+      "id": "62031fd3219aa58de428a34638aa2ed8f0fe85bf1c20c6a4fc7e8eda75fd9b54"
+    },
+    {
+      "external_id": "302290",
+      "post_number": 10,
+      "url": "https://discuss.python.org/t/109161/10",
+      "created_at": "2026-09-22T18:48:38.903Z",
+      "updated_at": "2026-09-22T18:48:38.903Z",
+      "author": "Monarch",
+      "body": "<p>Massive +1. I’ve written libraries for dealing with APIs with hundreds of nested fields, most of them optional, and I’ve spent a lot of time making sure the user only has to deal with typed objects that are nice to work with in Python. That includes not making them deal with optionals or missing data unless absolutely necessary. These (PEP 823 &amp; PEP 824) operators would make my libraries’ code much nicer by eliminating a ridiculous amount of repetitive <code>None</code> checks.</p>",
+      "id": "d2be41a8c669193d8f553619663e399f3d9c957f037f8da6c056c2b571f386c4"
+    },
+    {
+      "external_id": "302343",
+      "post_number": 11,
+      "url": "https://discuss.python.org/t/109161/11",
+      "created_at": "2026-09-23T14:00:17.704Z",
+      "updated_at": "2026-09-23T14:00:17.704Z",
+      "author": "cdce8p",
+      "body": "<aside class=\"quote no-group\" data-username=\"a-reich\" data-display-name=\"A Reich\" data-post=\"9\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/a-reich/48/5885_2.png\" class=\"avatar\"> A Reich:</div>\n<blockquote>\n<p>My only question is… how did you decide on this color for the bikeshed? <img src=\"https://emoji.discourse-cdn.com/apple/sweat_smile.png?v=15\" title=\":sweat_smile:\" class=\"emoji\" alt=\":sweat_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"> When defining new syntax fore a feature there are always lots of possibilities for how to “spell” it, especially when introducing the new ? symbol. Is the rationale basically that other languages use these two spellings for the same concepts?</p>\n</blockquote>\n</aside>\n<p>The question how to read the expression out loud was brought up during review. These are just some suggestions we did come up with. If there are other better options, I’m happy to include them. Just keep in mind that these are only suggestions. If the PEP is accepted, I’d think some option might emerge organically anyway which can but doesn’t need to be the suggested one in the PEP.</p>\n<p>The section from the PEP: [PEP reference omitted]</p>",
+      "id": "046e5a4dfcb481cd90608711ed197c6ccd022d1788350dced2577694b520cd52"
+    },
+    {
+      "external_id": "302349",
+      "post_number": 12,
+      "url": "https://discuss.python.org/t/109161/12",
+      "created_at": "2026-09-23T14:37:17.081Z",
+      "updated_at": "2026-09-23T14:37:17.081Z",
+      "author": "CarrotManMatt",
+      "body": "<p>Was <a class=\"mention\" href=\"/u/a-reich\">@a-reich</a> referring to the way to “say” the construct or the actual python syntax?</p>",
+      "id": "becfdfae00e0a1edd7d72a9f48fa52b706d1145064c1649cacbfda317ad79c32"
+    },
+    {
+      "external_id": "302351",
+      "post_number": 13,
+      "url": "https://discuss.python.org/t/109161/13",
+      "created_at": "2026-09-23T14:44:09.625Z",
+      "updated_at": "2026-09-23T14:44:09.625Z",
+      "author": "a-reich",
+      "body": "<p>Sorry, I was referring to the actual syntax. i.e. how come <code>a ?? b</code> and not say <code>a ? b</code>, <code>a ?| b</code>, <code>a coalesce b</code>, or some other character combination. I didn’t spot anywhere in the PEP explicitly stating this other than the rejected idea about a keyword.</p>",
+      "id": "6b79a95ed1b5118266443eeac2558c483e56135d9b98c7508eb141944b6f06be"
+    },
+    {
+      "external_id": "302357",
+      "post_number": 14,
+      "url": "https://discuss.python.org/t/109161/14",
+      "created_at": "2026-09-23T16:54:14.934Z",
+      "updated_at": "2026-09-23T16:54:15.188Z",
+      "author": "cdce8p",
+      "body": "<p>My bad. Almost all languages with coalescing operators use <code>??</code> and <code>??=</code>. AFAIR all prior discussions, including PEP 505, used them as well.</p>\n<p>Why <code>??</code> and not a single <code>?</code>: The <code>None</code>-coalescing operator is a conditional operator. As such it’s more closely related to <code>and</code> / <code>or</code> than binary operators <code>+</code>, <code>-</code>, <code>&amp;</code>, <code>|</code>, … Looking at other languages again, <code>and</code> is often spelled as <code>&amp;&amp;</code>, <code>or</code> as <code>||</code>. Both use two chars to differentiate them from their binary counterparts.</p>",
+      "id": "50a7641a07aa8bed3444075be86d604001c9d7f5c5477b67f851f0bcb0b37f11"
+    },
+    {
+      "external_id": "302569",
+      "post_number": 15,
+      "url": "https://discuss.python.org/t/109161/15",
+      "created_at": "2026-09-27T12:25:44.886Z",
+      "updated_at": "2026-09-27T12:25:44.886Z",
+      "author": "mcgfeller",
+      "body": "<p>+1. Occurs over and over in my code.</p>",
+      "id": "470a3b1069560cbec634a54bf98f184c1cb8c085dce2fe4b272bc1db4ac9968a"
+    },
+    {
+      "external_id": "302575",
+      "post_number": 16,
+      "url": "https://discuss.python.org/t/109161/16",
+      "created_at": "2026-09-27T20:32:13.009Z",
+      "updated_at": "2026-09-27T20:32:13.009Z",
+      "author": "svioletg",
+      "body": "<p>+1 from me, I was very excited to see this idea get revitalized as a new PEP.</p>\n<p><a class=\"mention\" href=\"/u/a-reich\">@a-reich</a> While I usually like that Python generally prefers keywords over symbols (like <code>and</code>/<code>or</code>), I think in this case <code>coalesce</code> doesn’t provide much benefit mainly because anyone learning Python and unfamiliar with the concept might not immediately grasp what coalesce is supposed to mean in this context, and although the “formal” name for the operation is nullish-coalescing, I would assume most would read <code>a ?? b</code> aloud not as “a coalesce b” but “a if not null, else b”, which is basically already what we have now in the form of <code>a if a is not None else b</code>, so an already-established symbol I think makes more sense as the choice for that shortcut.</p>",
+      "id": "ce00b05069c1d898d6862b644991146a1b136397c7cffc3d4398bdf9ecfc27cb"
+    },
+    {
+      "external_id": "302589",
+      "post_number": 17,
+      "url": "https://discuss.python.org/t/109161/17",
+      "created_at": "2026-09-28T02:09:16.266Z",
+      "updated_at": "2026-09-28T02:09:16.266Z",
+      "author": "hlovatt",
+      "body": "<p>Really dislike the <code>??</code> notation. Not Python like at all! How about <code>a ifnone b</code>? Don’t bother with <code>??=</code> at all, too niche.</p>",
+      "id": "7732bdfd21d2e37eef6baa66140ad2134b3be4d0df0ab33b498f87ef124ecab0"
+    },
+    {
+      "external_id": "302608",
+      "post_number": 18,
+      "url": "https://discuss.python.org/t/109161/18",
+      "created_at": "2026-09-28T18:04:33.789Z",
+      "updated_at": "2026-09-28T18:04:34.033Z",
+      "author": "barry",
+      "body": "<p>I once suggested <code>otherwise</code> but PEP 824 [PEP reference omitted]<sup class=\"footnote-ref\"><a href=\"#footnote-302608-1\" id=\"footnote-ref-302608-1\">[1]</a></sup>.</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-302608-1\" class=\"footnote-item\"><p>and other soft keywords <a href=\"#footnote-ref-302608-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "81ca05bd634c058378f06a1d413372204ab6c40d923de1557c96f37aacaf99c6"
+    },
+    {
+      "external_id": "302609",
+      "post_number": 19,
+      "url": "https://discuss.python.org/t/109161/19",
+      "created_at": "2026-09-28T18:38:32.095Z",
+      "updated_at": "2026-09-28T18:38:57.651Z",
+      "author": "monk-time",
+      "body": "<p>People suggesting other syntax options should also explain why this feature should use <em>anything else</em> but the notation that is already widely used in a dozen of other major languages. The value of reusing an existing convention is high, and the cost of breaking that expectation for newcomers who are already familiar with the convention is also high and should be justified.</p>\n<p>This is not some experimental feature that is breaking a new ground in programming and therefore needing a brainstorm over syntax.</p>",
+      "id": "579631f6cd1039a90b88d4cea0ae06b0bf3b0ef6f13efb043a9a944c8b987cf5"
+    },
+    {
+      "external_id": "302610",
+      "post_number": 20,
+      "url": "https://discuss.python.org/t/109161/20",
+      "created_at": "2026-09-28T19:30:41.799Z",
+      "updated_at": "2026-09-28T19:30:41.799Z",
+      "author": "steve.dower",
+      "body": "<p>The <code>??</code> syntax has a very natural pairing with <code>?.</code>, and since they are two parts of what should usually be the same expression, it makes sense for both to have some level of consistency.<sup class=\"footnote-ref\"><a href=\"#footnote-302610-1\" id=\"footnote-ref-302610-1\">[1]</a></sup></p>\n<p>By “natural pairing” I mean that <code>a?.b ?? c</code> should be a typical usage, where <code>None</code> is only really a special intermediate value and not an intentional result. Translated into current code, this would be <code>a.b if a is not None and a.b is not None else c</code><sup class=\"footnote-ref\"><a href=\"#footnote-302610-2\" id=\"footnote-ref-302610-2\">[2]</a></sup>. Both expressions are pretty good in this respect - the former uses punctuation operators and the latter using textual operators, and the precedence works as each naturally reads.<sup class=\"footnote-ref\"><a href=\"#footnote-302610-3\" id=\"footnote-ref-302610-3\">[3]</a></sup></p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-302610-1\" class=\"footnote-item\"><p>It’s irrelevant since I’ve withdrawn my own efforts on this, but I wouldn’t have split the PEP up into two. The value of <code>??</code> is strongest when <code>?.</code> exists, and with either half of the syntax missing, the value quickly becomes zero or negative. <a href=\"#footnote-ref-302610-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n<li id=\"footnote-302610-2\" class=\"footnote-item\"><p>Without the repeated evaluations, of course. <a href=\"#footnote-ref-302610-2\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n<li id=\"footnote-302610-3\" class=\"footnote-item\"><p>Though, of course, I don’t prefer either syntax over a traversal helper function or a data model that simply doesn’t allow <code>None</code>s to reach my business logic. <a href=\"#footnote-ref-302610-3\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "03ca0b69ba39657dab3064d3d8acbf971e343f33a3330feede1244364aa1bde9"
+    },
+    {
+      "external_id": "302621",
+      "post_number": 21,
+      "url": "https://discuss.python.org/t/109161/21",
+      "created_at": "2026-09-28T23:11:58.859Z",
+      "updated_at": "2026-09-28T23:12:23.891Z",
+      "author": "pekkaklarck",
+      "body": "<p>There certainly is precedence in Python using textual operators when other languages use punctuation. Using <code>and</code> and <code>or</code> instead of <code>&amp;&amp;</code> and <code>||</code> is an obvious example, but Python (Guido?) somewhat recently deciding to use</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">v = a if expr else b\n</code></pre>\n<p>instead of</p>\n<pre data-code-wrap=\"javascript\"><code class=\"lang-javascript\">v = expr ? a : b\n</code></pre>\n<p>is even more relevant in this context.</p>",
+      "id": "5210423bd3681472111a0a5c4f47458a05d8add116d7316ea31abd1c597a3961"
+    },
+    {
+      "external_id": "302634",
+      "post_number": 22,
+      "url": "https://discuss.python.org/t/109161/22",
+      "created_at": "2026-09-29T06:14:21.258Z",
+      "updated_at": "2026-09-29T06:14:21.258Z",
+      "author": "hlovatt",
+      "body": "<p>For both <a class=\"mention\" href=\"/u/steve.dower\">@steve.dower</a>’s and <a class=\"mention\" href=\"/u/pekkaklarck\">@pekkaklarck</a>’s examples:</p>\n<p><code>a?.b ?? c</code> - I prefer the long form <code>c if a is None or a.b is None else a.b</code></p>\n<p>and</p>\n<p><code>a ? b : c</code> - I prefer the long form <code>b if a else c</code></p>\n<p>One of the things I like in Python is how readable it is, as opposed to how compact it is. I also am quite happy when Python doesn’t follow the crowd. I have used <code>a ?? b</code> in Swift, but the alternative is `a == nil ? b : a` <img src=\"https://emoji.discourse-cdn.com/apple/frowning.png?v=15\" title=\":frowning:\" class=\"emoji\" alt=\":frowning:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>On the clear in preference to compact front, it is better to contain the nitty-gritty of parsing rather free-form input into a separate class or module so that the main logic remains visible and isn’t buried in None checks. Which further devalues a compact notion.</p>\n<p>Of more value is the optimisation that in <code>a ?? b</code> a is only evaluated once. Therefore I can see the point in <code>a ifnone b</code> or similar. But perhaps there is a compiler optimisation that would eliminate the need for that also.</p>\n<p>Would like Python to remain none computer scientist friendly. <img src=\"https://emoji.discourse-cdn.com/apple/slightly_smiling_face.png?v=15\" title=\":slightly_smiling_face:\" class=\"emoji\" alt=\":slightly_smiling_face:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>",
+      "id": "4368abc16a72a90e060666c7f6e0fc87ed037f7bcdd9d49b56d22175bee99710"
+    },
+    {
+      "external_id": "302862",
+      "post_number": 23,
+      "url": "https://discuss.python.org/t/109161/23",
+      "created_at": "2026-10-02T05:18:50.360Z",
+      "updated_at": "2026-10-02T05:18:50.360Z",
+      "author": "svioletg",
+      "body": "<p>A nitpick I’d have with <code>ifnone</code> is that it, at least to me, makes <code>a ifnone b</code> kind of read as “a if a is None, else b”, when what’s really happening is the opposite. <code>ifnotnone</code> would be clearer, but even as someone who generally prefers longer-but-clearer code and Python’s keywords over certain symbol-based operators, having three words mushed into one keyword feels a bit odd.</p>\n<p>Honestly even as a strong supporter of this I admit that it will probably feel a bit out of place for Python at first, but personally the benefits in brevity outweigh that strangeness. The <code>:=</code> operator is also kind of a strange thing to encounter at first as well, but I’ve ended up using it quite a lot and gotten well used to seeing it, I think it’s entirely plausible the same can happen for <code>??</code>, <code>?.</code>, and <code>?[]</code>.</p>",
+      "id": "01ae930b87a5b3c2f65c59c7b39603289a438bedaa3f3edb5a3cd77621338dc3"
+    },
+    {
+      "external_id": "303074",
+      "post_number": 24,
+      "url": "https://discuss.python.org/t/109161/24",
+      "created_at": "2026-10-06T05:55:04.334Z",
+      "updated_at": "2026-10-06T05:55:04.334Z",
+      "author": "dimaqq",
+      "body": "<aside class=\"quote group-committers\" data-username=\"steve.dower\" data-display-name=\"Steve Dower\" data-post=\"20\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/steve.dower/48/56_2.png\" class=\"avatar\"> Steve Dower:</div>\n<blockquote>\n<p>By “natural pairing” I mean that <code>a?.b ?? c</code> should be a typical usage, where <code>None</code> is only really a special intermediate value and not an intentional result. Translated into current code, this would be <code>a.b if a is not None and a.b is not None else c</code></p>\n</blockquote>\n</aside>\n<p>One could argue that more conventional Python would be this instead:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">if not a:\n    return c\n\nreturn a.b or c\n</code></pre>\n<p>It’s easier to read (debatable, I guess), and aligns more naturally with falsy-as-special against literal-None-as-special.</p>",
+      "id": "754e10495ccf9008ffe6772919ae8c505d90a30989e4239f7e2d2cab5c8218e7"
+    },
+    {
+      "external_id": "303076",
+      "post_number": 25,
+      "url": "https://discuss.python.org/t/109161/25",
+      "created_at": "2026-10-06T06:02:28.401Z",
+      "updated_at": "2026-10-06T06:07:27.242Z",
+      "author": "gnat",
+      "body": "<p><strong>Strong +1</strong> for similar reasons in <a href=\"https://discuss.python.org/t/pep-823-none-aware-access-operators/109159/54\" class=\"inline-onebox\">PEP 823: None-aware access operators - #54 by gnat</a> but for assignment.</p>\n<p>Pairs nicely with PEP 823.</p>\n<p>This is all about <strong>not mangling your assignment syntax</strong> yet still being safe.</p>\n<p><strong>Just add a few characters to your existing code. No restructuring.</strong></p>\n<p>Whenever I write <code>c if a is None or a.b is None else a.b</code> (or anything more complicated than this) I’m usually breaking it into multiple lines, which completely defeats the purpose of inlining it and blows up the assignment syntax anyway.</p>\n<p>Natural primitive for dynamic languages like Python where duck typing is prevailant and you very very often needing to ask for forgiveness, not permission.</p>",
+      "id": "8d2d19bad65b5bad2e3d65fca5f7c38a933e0746c91117d5d4be4eb359a77583"
+    },
+    {
+      "external_id": "303108",
+      "post_number": 26,
+      "url": "https://discuss.python.org/t/109161/26",
+      "created_at": "2026-10-06T15:01:47.792Z",
+      "updated_at": "2026-10-06T15:01:47.792Z",
+      "author": "steve.dower",
+      "body": "<aside class=\"quote no-group\" data-username=\"gnat\" data-display-name=\"Nathaniel Sabanski\" data-post=\"25\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/gnat/48/16954_2.png\" class=\"avatar\"> Nathaniel Sabanski:</div>\n<blockquote>\n<p>Natural primitive for dynamic languages like Python where duck typing is prevailant and you very very often needing to ask for forgiveness, not permission.</p>\n</blockquote>\n</aside>\n<p>Unfortunately (for your “strong +1”), this is not what the proposal does.</p>\n<p>Duck typing does not naturally lead to the propagation of <code>None</code> in any way - they are entirely orthogonal. The concept of dealing with “members that may be <code>None</code>” is more likely to occur with a strict interface model, where you can’t get away with implementing “just enough” of an interface like you can in a duck-typing model like Python’s.</p>\n<p>The proposal you seem to prefer would be the one that treats <code>?.</code> as “get the attribute if the object has it, otherwise <code>None</code>” - this PEP (nor 823) is not that proposal. This is the one where the result of an operation is <code>None</code> and you want to break out of the current expression, which is neither a feature of duck-typing nor a likely outcome.</p>",
+      "id": "85136bc31b9d90a724da3b81326a9eef9e5fbe7389cd5ffb3f8d6b33e80e16a2"
+    },
+    {
+      "external_id": "303109",
+      "post_number": 27,
+      "url": "https://discuss.python.org/t/109161/27",
+      "created_at": "2026-10-06T16:38:10.986Z",
+      "updated_at": "2026-10-06T16:38:10.986Z",
+      "author": "pf_moore",
+      "body": "<aside class=\"quote group-committers\" data-username=\"steve.dower\" data-display-name=\"Steve Dower\" data-post=\"26\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/steve.dower/48/56_2.png\" class=\"avatar\"> Steve Dower:</div>\n<blockquote>\n<p>The proposal you seem to prefer would be the one that treats <code>?.</code> as “get the attribute if the object has it, otherwise <code>None</code>”</p>\n</blockquote>\n</aside>\n<p>This feels to me like it’s the biggest flaw with this PEP. In spite of the fact that the PEP clearly specifies the behaviour, and we’ve had multiple discussions about what is and isn’t included in the behaviour, we still see people regularly misunderstanding what the operations do.</p>\n<p>Even if I were in favour of the proposal, the ease with which it can be misinterpreted<sup class=\"footnote-ref\"><a href=\"#footnote-303109-1\" id=\"footnote-ref-303109-1\">[1]</a></sup> feels like it’s a major flaw, and one that simply isn’t going away as time goes on. The usual argument against “this is hard to understand” concerns is “people need to learn new features, and once they do, it’ll be fine”, which doesn’t seem to be happening here.</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-303109-1\" class=\"footnote-item\"><p>something that I routinely do when I see similar operators in other languages <a href=\"#footnote-ref-303109-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "33910da0d8936a6c2e30c92189c24345f850aee6e8853dcad7cd75c63b5448a6"
+    },
+    {
+      "external_id": "303110",
+      "post_number": 28,
+      "url": "https://discuss.python.org/t/109161/28",
+      "created_at": "2026-10-06T17:03:06.766Z",
+      "updated_at": "2026-10-06T17:03:49.277Z",
+      "author": "guido",
+      "body": "<p>Looks like we’ve been side-tracked a little.</p>\n<p>My reason for sponsoring both PEPs is that they replace <strong>common</strong>, <strong>verbose</strong> idioms with concise custom syntax.</p>\n<p>Take a recent example,</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">c if a is None or a.b is None else a.b\n</code></pre>\n<p>Even with coloring, when you’re skimming code, this reads like</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">c if bla bla bla or bla bla bla else a.b\n</code></pre>\n<p>In the version using ‘?.’ and ‘??’, each name is used exactly once. In the if/else version, you have to carefully read the bla bla bla to confirm the correspondence of the variables and expressions to know what it does.  This slows down reading, distracting the reader from comprehending the overall structure.</p>\n<p>P.S. I don’t believe that Nathaniel wanted the interpretation that Steve assumed he wanted. His text is <strong>exactly</strong> the a?.b ?? c that Steve wanted earlier (and quoted at the top here).</p>",
+      "id": "9968f6d39f6700e7578609999759d88540808b815d552efe218548f199e4c3f2"
+    },
+    {
+      "external_id": "303117",
+      "post_number": 29,
+      "url": "https://discuss.python.org/t/109161/29",
+      "created_at": "2026-10-06T18:22:21.204Z",
+      "updated_at": "2026-10-06T18:24:55.024Z",
+      "author": "steve.dower",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"28\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>Even with coloring, when you’re skimming code, this reads like</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">c if bla bla bla or bla bla bla else a.b\n\n</code></pre>\n<p>In the version using ‘?.’ and ‘??’, each name is used exactly once.</p>\n</blockquote>\n</aside>\n<p>Yep, this is a very effective way to show the improvement that the syntax achieves, and I agree with it. (I only disagree with needing the <code>None</code>-check in the first place, but once you have it, the <code>?.</code> and <code>??</code> syntax is an improvement - my <em>fear</em> is that the existence of the syntax will increase the prevalence of API designs that need <code>None</code>-checks generally, which is why I withdrew my support)</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"28\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I don’t believe that Nathaniel wanted the interpretation that Steve assumed he wanted. His text is <strong>exactly</strong> the a?.b ?? c that Steve wanted earlier (and quoted at the top here).</p>\n</blockquote>\n</aside>\n<p>I believe you’re right, but I remember every previous discusson (and at least one podcast…) on this topic quickly hitting “it does None checks which is good because duck-typing”. Conflating the two leads to the confusion that Paul mentioned, as happened multiple times last time.</p>",
+      "id": "20f0ef7a811cb95ff6d5011b42489a447893d5bd4905950d02435bb6dacab585"
+    },
+    {
+      "external_id": "303120",
+      "post_number": 30,
+      "url": "https://discuss.python.org/t/109161/30",
+      "created_at": "2026-10-06T19:48:41.443Z",
+      "updated_at": "2026-10-06T19:48:41.443Z",
+      "author": "guido",
+      "body": "<p>Oh, I see! Nathaniel does make this connection in the PEP 823 thread.</p>",
+      "id": "3e7b9eacf39bc68015c09c1331ae4561870613c2ce7ece4d8640f0133fc513fa"
+    },
+    {
+      "external_id": "303128",
+      "post_number": 31,
+      "url": "https://discuss.python.org/t/109161/31",
+      "created_at": "2026-10-06T21:25:21.628Z",
+      "updated_at": "2026-10-06T21:25:53.616Z",
+      "author": "svioletg",
+      "body": "<p>On this topic, which I’ve seen come up a number of times (more particularly on the discussion for 823):</p>\n<aside class=\"quote group-committers\" data-username=\"steve.dower\" data-display-name=\"Steve Dower\" data-post=\"29\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/steve.dower/48/56_2.png\" class=\"avatar\"> Steve Dower:</div>\n<blockquote>\n<p>my <em>fear</em> is that the existence of the syntax will increase the prevalence of API designs that need <code>None</code>-checks generally</p>\n</blockquote>\n</aside>\n<p>While I can understand where you’re coming from, the reason why I would find so much use in both PEPs 823 and 824 is that there are <em>already</em> lots of APIs (maybe not so much in pure Python code, I’m particularly referring to things like external web APIs which is something many Python projects including mine are dealing with) that end up requiring these kinds of checks - the way I see it this pattern is going to exist either way, so we might as well have an easier way to deal with it.</p>",
+      "id": "1f603f8c6494ecd9fdc464c8c7f95e1a10aef69d7751e555e163cacb132afe69"
+    },
+    {
+      "external_id": "303132",
+      "post_number": 32,
+      "url": "https://discuss.python.org/t/109161/32",
+      "created_at": "2026-10-06T22:51:24.687Z",
+      "updated_at": "2026-10-06T22:51:24.687Z",
+      "author": "guido",
+      "body": "<aside class=\"quote group-committers\" data-username=\"pf_moore\" data-display-name=\"Paul Moore\" data-post=\"27\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/pf_moore/48/35_2.png\" class=\"avatar\"> Paul Moore:</div>\n<blockquote>\n<p>The usual argument against “this is hard to understand” concerns is “people need to learn new features, and once they do, it’ll be fine”, which doesn’t seem to be happening here.</p>\n</blockquote>\n</aside>\n<p>What you’re observing in this thread is multiple different people repeatedly getting the interpretation wrong. But there’s not much opportunity for learning this new feature by trying to use it – all we have is the PEP text. (And a <a href=\"https://pep823-and-pep824-demo.pages.dev/\">demo sandbox</a>, but I suspect very few people tried that before posting here.)</p>\n<p>I also believe that your argument “people misunderstand it” is stronger in the PEP-823 thread (<code>a?.b</code>) than here (<code>a ?? b</code>). Once you learn about <code>??</code> it’s not hard to remember what it does: it does the same as <code>or</code>, which is already in widespread (ab)use for this idiom), except it checks whether the left operand is <code>None</code> instead of falsy. The <code>None</code> check is typically what people <em>want</em>, but often we are too lazy to write the whole <code>if x is None</code> thing.</p>\n<p>For me, the strongest use cases for <code>??</code> and <code>??=</code> are for function arguments whose type is <code>T | None</code> where <code>None</code> implies “use some other specific default”. For example, a function argument that should be a list shouldn’t be written as <code>arg: list[T] = []</code>.<sup class=\"footnote-ref\"><a href=\"#footnote-303132-1\" id=\"footnote-ref-303132-1\">[1]</a></sup> But we <strong>can</strong> write it as <code>arg: list[T] | None</code> and then at the top of the function write <code>arg ??= []</code>.</p>\n<p>The nice thing is that in this case a type checker will infer <code>arg</code>’s type as <code>list[T]</code> in the rest of the function body, so you don’t have to worry about shutting the type checker up about the <code>None</code> case, even though the argument has <code>| None</code> in its type.</p>\n<p>And if you don’t use type checking, it still solves a real problem – mutable defaults are still evil so you still need to include</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">if arg is None:\n    arg = []\n</code></pre>\n<p>Which I consider <em>less</em> readable than <code>arg ??= []</code> because on first skim it reads as</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">if blah blah blah:\n    blah = []\n</code></pre>\n<p>and now you have to read more carefully to confirm that it’s a <code>None</code> check and an assignment to the variable that’s <code>None</code>, before you can recognize the idiom for “use default if None”.</p>\n<p>The use case for <code>??</code> is actually ever so slightly weaker – its’ most useful when <code>arg</code> is used only once in the function body (maybe being passed to another function). But it would be too weird to introduce <code>??=</code> without <code>??</code>.</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-303132-1\" class=\"footnote-item\"><p>Mutable default <a href=\"#footnote-ref-303132-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "7d979fe123b06d782c17f80f4c405862fb71b73ce514a56cc416c6f5d6d2bf09"
+    },
+    {
+      "external_id": "303137",
+      "post_number": 33,
+      "url": "https://discuss.python.org/t/109161/33",
+      "created_at": "2026-10-07T00:05:43.708Z",
+      "updated_at": "2026-10-07T00:05:43.708Z",
+      "author": "guido",
+      "body": "<p>I used AI to find the most contentious remaining issues in this thread, so I can try to address them all in one omnibus post (without quoting from individual messages – these are issues that were brought up repeatedly). In decreasing order of importance it listed:</p>\n<ol>\n<li>Whether PEP 824 is worthwhile independently of PEP 823</li>\n<li>Whether <code>??=</code> earns its own syntax</li>\n<li>Why new syntax is justified at all</li>\n<li>Why <code>??</code> is preferable to a keyword spelling</li>\n<li>Whether the operator encourages excessive use of <code>None</code></li>\n<li>Exact <code>None</code> semantics</li>\n<li>The relationship between the two PEPs7.</li>\n<li>Mixing with <code>and</code> and <code>or</code></li>\n</ol>\n<p>Going over the list:</p>\n<h2><a name=\"p-303137-h-1-whether-pep-824-is-worthwhile-independently-of-pep-823-1\" class=\"anchor\" href=\"#p-303137-h-1-whether-pep-824-is-worthwhile-independently-of-pep-823-1\" aria-label=\"Heading link\"></a>1. Whether PEP 824 is worthwhile independently of PEP 823</h2>\n<p>I’m combining this with <strong>7. The relationship between the two PEPs</strong>.</p>\n<p>Perhaps PEP 505 shouldn’t have been split, but it’s a bit late to coalesce both new PEPs back into a single one. Ideally, both would be accepted, as they have some synergy. But either one by itself adds a significant new feature that can stand on its own (and opposition to 823 seems somewhat stronger than to 824). In my last post I pointed out the use case I expect to be using this most for, and that most definitely stands on its own. And note that, for example, C# introduced <code>??</code> in 2005 but <code>?.</code> a declade later.</p>\n<h2><a name=\"p-303137-h-2-whether-earns-its-own-syntax-2\" class=\"anchor\" href=\"#p-303137-h-2-whether-earns-its-own-syntax-2\" aria-label=\"Heading link\"></a>2. Whether <code>??=</code> earns its own syntax</h2>\n<p>In my last post I mentioned that <code>??=</code> is a stronger feature than <code>??</code> so I do think so.</p>\n<h2><a name=\"p-303137-h-3-why-new-syntax-is-justified-at-all-3\" class=\"anchor\" href=\"#p-303137-h-3-why-new-syntax-is-justified-at-all-3\" aria-label=\"Heading link\"></a>3. Why new syntax is justified at all</h2>\n<p>My main argument (for both PEPs) is that the more traditional spelling using e.g. <code>b if a is None else a</code> reads as <code>b if bla bla bla else a</code>, which requires careful reading to confirm that <code>bla bla bla</code> actually checks whether <code>a</code> is None and not whether some other variable is None.</p>\n<h2><a name=\"p-303137-h-4-why-is-preferable-to-a-keyword-spelling-4\" class=\"anchor\" href=\"#p-303137-h-4-why-is-preferable-to-a-keyword-spelling-4\" aria-label=\"Heading link\"></a>4. Why <code>??</code> is preferable to a keyword spelling</h2>\n<p>It’s the spelling in every other language that has this feature. While I’ve sometimes chosen to use keywords instead of conventional operators (last in 2006 for the if-expression) I used existing simple English words, not made-up neologisms like <code>ifelse</code>. And I’m sorry, Barry, but I find <code>otherwise</code> too long to type, and also it’s rather nonspecific about what it does. <code>ifnone</code> is more specific, but still asks the question “if <strong>what</strong> is None?”. In any case there wasn’t much support for either of these alternatives.</p>\n<h2><a name=\"p-303137-h-5-whether-the-operator-encourages-excessive-use-of-none-5\" class=\"anchor\" href=\"#p-303137-h-5-whether-the-operator-encourages-excessive-use-of-none-5\" aria-label=\"Heading link\"></a>5. Whether the operator encourages excessive use of <code>None</code></h2>\n<p>Steve Dower and Mike H have brought this up. Honestly I don’t yet understand their arguments, and have asked for a clarification. My current position is that optional components occur all the time in real life data and we must be able to deal with them efficiently.</p>\n<h2><a name=\"p-303137-h-6-exact-none-semantics-6\" class=\"anchor\" href=\"#p-303137-h-6-exact-none-semantics-6\" aria-label=\"Heading link\"></a>6. Exact <code>None</code> semantics</h2>\n<p>This issue asks about configurability of the specific check that’s being executed to test whether to take the second branch or not. There hasn’t been much support for this proposal. It slows down the common case significantly – we’d need a new bytecode instruction that checks for <code>None</code>. This is cheap; but if the value is <strong>not</strong> <code>None</code>, it has to do an expensive method lookup to find the overridable dunder that implements the check, doing a lot of unnecessary work in the common case where no such dunder is defined. The cost of this would lead people to try to avoid the operator in favor of less precise approaches (notable going back to <code>or</code>).</p>\n<h2><a name=\"p-303137-h-7-the-relationship-between-the-two-peps-7\" class=\"anchor\" href=\"#p-303137-h-7-the-relationship-between-the-two-peps-7\" aria-label=\"Heading link\"></a>7. The relationship between the two PEPs</h2>\n<p>Answered above with (1).</p>\n<h2><a name=\"p-303137-h-8-mixing-with-and-and-or-8\" class=\"anchor\" href=\"#p-303137-h-8-mixing-with-and-and-or-8\" aria-label=\"Heading link\"></a>8. Mixing with <code>and</code> and <code>or</code></h2>\n<p>This is the question about operator precedence. The PEP puts it <em>above</em> (grouping less tightly than) <code>or</code>. For example, <code>a ?? b or c</code> is read as <code>a ?? (b or c)</code>, which makes some sense; also, <code>a or b ?? c</code> reads as <code>(a or b) ?? c</code> which I guess also makes sense.</p>\n<p>The PEP puts it <em>below</em> <code>if-else</code>, so that e.g. <code>a ?? b if c else d</code> is read as <code>(a ?? b) if c else d</code>, which makes perhaps a little more sense than reading it as <code>a ?? (b if c else d)</code>.</p>\n<p>I don’t object to the PEP’s choices, but placement below <code>not</code> might also make sense. It feels pretty rare to combine <code>??</code> with the boolean operators anyway, and I might well parenthesize those cases. At the same time I don’t want to go the JavaScript way, which requires parenthesization in such cases.</p>\n<p>There’s another, related issue – associativity, IOW what should <code>a ?? b ?? c</code> do. The PEP doesn’t say. It turns out that regardless of whether you evaluate it as <code>(a ?? b) ?? c</code> or <code>a ?? (b ?? c)</code>, you always get the same outcome! (The first non-<code>None</code> value, if any.) But the former, <code>(a ?? b) ?? c</code> evaluates the outcome of <code>a ?? b</code> redundantly even if it is already not <code>None</code>, whereas <code>a ?? (b ?? c)</code> evaluates each at most once, from left to right. The spec <em>implicitly</em> indicates that <code>a ?? b ?? c</code> is a single chain of <code>??</code> operators, trying the operands one at a time, stopping at the first not-<code>None</code> value. So we might as well make this more explicit by saying (in the Precedence section) that the operator is considered right-associative. (I also suggest adding an example showing how <code>a ?? b if c else d</code> works.)</p>",
+      "id": "11e746a15017a59b7c39f9d4d506a0a5ceb5f32a2fb3fe62d92d7d16c929f397"
+    },
+    {
+      "external_id": "303140",
+      "post_number": 34,
+      "url": "https://discuss.python.org/t/109161/34",
+      "created_at": "2026-10-07T00:33:03.740Z",
+      "updated_at": "2026-10-07T00:33:03.740Z",
+      "author": "mikeshardmind",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<h2>5. Whether the operator encourages excessive use of <code>None</code></h2>\n<p>Steve Dower and Mike H have brought this up. Honestly I don’t yet understand their arguments, and have asked for a clarification.</p>\n</blockquote>\n</aside>\n<p>To be clear, I don’t think 824 encourages this, I do think 823 does slightly<sup class=\"footnote-ref\"><a href=\"#footnote-303140-1\" id=\"footnote-ref-303140-1\">[1]</a></sup></p>\n<p>I’ll put together a realistic example in 823’s thread in response to your question about it there later</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-303140-1\" class=\"footnote-item\"><p>I do also agree that there are real patterns this helps with for incoming data, but I also think there are better ways to handle such incoming data once at receiving, and then not being in such a position in the rest of the program if those top level objects are passed around. <a href=\"#footnote-ref-303140-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "561ff2edc2888dfcefee4450c1adb9f3999366b7d7c62c083505e8cf0ff50ec3"
+    },
+    {
+      "external_id": "303142",
+      "post_number": 35,
+      "url": "https://discuss.python.org/t/109161/35",
+      "created_at": "2026-10-07T02:12:00.406Z",
+      "updated_at": "2026-10-07T02:12:00.406Z",
+      "author": "svioletg",
+      "body": "<p>Piggybacking off of the 6th point, I haven’t seen much support for it so far but I’m personally pretty firmly against a magic method to customize <code>??</code> - its usefulness to me lies solely in how strict it is. If <code>a ?? b</code> doesn’t always mean “give me <code>a</code> if it isn’t specifically <code>None</code>, otherwise give me <code>b</code>” and could potentially change depending on the class, we’re back to square one with <code>a or b</code> and this PEP would feel kind of moot.</p>",
+      "id": "c5e297b7e8f1f288b4ac012daee8ae78c73fbb44e843f1922f93309b511eeffc"
+    },
+    {
+      "external_id": "303143",
+      "post_number": 36,
+      "url": "https://discuss.python.org/t/109161/36",
+      "created_at": "2026-10-07T02:44:59.970Z",
+      "updated_at": "2026-10-07T02:44:59.970Z",
+      "author": "barry",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I used AI to find the most contentious remaining issues in this thread, so I can try to address them all in one omnibus post</p>\n</blockquote>\n</aside>\n<p>I really appreciate your post, and I’ve been avoiding saying too much on the PEP 823/824 threads because I really don’t want to even hint at a bias given my (possible) role as one member of an SC that might decide their fates.  That said, I’ve put a lot of thought into <em>how</em> I’ll approach deliberation on the PEPs <em>if</em> they are presented to the current SC for decision, which they haven’t yet been.  That timeline is totally up to the PEP authors, so maybe I’ll just get to be a spectator when the time comes <img src=\"https://emoji.discourse-cdn.com/apple/grin.png?v=15\" title=\":grin:\" class=\"emoji\" alt=\":grin:\" loading=\"lazy\" width=\"20\" height=\"20\">.</p>\n<p>As an SC member, there’s no hiding the fact that I have personal opinions, but whether I lean for or against a PEP, I always try to ask myself “what’s best for Python?”  I’m not special among my SC colleagues, all of whom truly do consider every nuance and angle from the same perspective.  The wonderful thing about serving with such exceptional people is the way we help each other see past our individual biases, and look at the wider impact, long term view, and overall benefit.</p>\n<p>Because the PEPs haven’t been submitted to the SC, we have not yet even discussed them<sup class=\"footnote-ref\"><a href=\"#footnote-303143-1\" id=\"footnote-ref-303143-1\">[1]</a></sup>.  I have no idea what my fellow SC members think about these PEPs.</p>\n<p>So with that preamble, what follows are my <em>personal</em> thoughts.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>opposition to 823 seems somewhat stronger than to 824</p>\n</blockquote>\n</aside>\n<p>I think this is because 823 reads more like line noise than 824.  One of the things that appealed to me so much about Python, oh 30+ years ago was how cleanly it read, especially as opposed to Perl.  Python has been pretty true to that ideal over the years, but <em>to me</em>, 823 feels like a step backward.  You can argue that long strings of <code>?.</code> and <code>?[]</code> won’t be common, but I’m not so sure.  I think we won’t know until the feature is out there, with code bases that can floor on Python 3.16<sup class=\"footnote-ref\"><a href=\"#footnote-303143-2\" id=\"footnote-ref-303143-2\">[2]</a></sup>.</p>\n<p>Especially as my eyes get older, it gets harder to pick out all the little squiggles and smudges which leads to the impression of line noise code.  Maybe IDEs with their syntax highlighting and other assistances can help, and maybe in the world of agentic coding it won’t matter anyway, but I still like to <em>read</em> code, and I think 823 will make that harder.  I don’t disagree with your <a href=\"https://www.youtube.com/watch?v=2i2ZbJnkFEY\">blah blah blah</a> observations, but complicated code is complicated.  I don’t see how 823 helps readability, and it may make it worse.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>In my last post I mentioned that <code>??=</code> is a stronger feature than <code>??</code> so I do think so.</p>\n</blockquote>\n</aside>\n<p>It could be, but to me, it’s also the more head-scratch inducing syntax.  For <code>a ??= b</code> the PEP defines the semantics as “if a is None, assign b’s value to a”, but it could also incorrectly be interpreted as “assign b to a but only if b is not None”.  I don’t think it’s immediately obvious at first glance and I don’t think it’s a slam dunk “learn it once, know it forever”.  If the syntax is encountered infrequently, I worry that it’s just cognitively ambiguous enough to slow the reader down, making them have to reason out what it does and why the semantics are as the PEP specifies.</p>\n<aside class=\"quote group-committers quote-modified\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>My main argument (for both PEPs) is that the more traditional spelling […] requires careful reading to confirm that <code>bla bla bla</code> actually checks whether <code>a</code> is None and not whether some other variable is None.</p>\n</blockquote>\n</aside>\n<p>Perhaps, but [PEP reference omitted] is nearly 24 years old now, so we have <em>a lot</em> of experience with it.  It’s terrible when you have a lot of nested if-else clauses, but that’s often a red flag that the code is trying to be too clever, where spelling it out might be tedious, but improves the readability.  And I recall something that you said <a class=\"mention\" href=\"/u/guido\">@guido</a> when you were choosing this exact syntax over all the other alternatives.  Paraphrasing<sup class=\"footnote-ref\"><a href=\"#footnote-303143-3\" id=\"footnote-ref-303143-3\">[3]</a></sup> it was that you wanted a syntax that was just awkward enough to discourage its common use over plain 'ol <code>if</code> statements.  If that’s true, you might not have succeeded <img src=\"https://emoji.discourse-cdn.com/apple/laughing.png?v=15\" title=\":laughing:\" class=\"emoji\" alt=\":laughing:\" loading=\"lazy\" width=\"20\" height=\"20\">.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>It’s the spelling in every other language that has this feature. While I’ve sometimes chosen to use keywords instead of conventional operators (last in 2006 for the if-expression) I used existing simple English words, not made-up neologisms like <code>ifelse</code>. And I’m sorry, Barry, but I find <code>otherwise</code> too long to type, and also it’s rather nonspecific about what it does.</p>\n</blockquote>\n</aside>\n<p>I actually find this compelling!  Try as I might, I’ve never found a good enough synonym for <code>otherwise</code> and as much as I’d prefer the readability of an English word here over an operator, there’s no obviously better choice.  In this case, following the herd makes sense.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>My current position is that optional components occur all the time in real life data and we must be able to deal with them efficiently.</p>\n</blockquote>\n</aside>\n<p>It definitely gets awkward when trying to clean up data, or traverse JSON fed dictionaries, or deeply nested data structures.  I’m just not sure whether the <em>language</em> can help here, or whether a library or functional interface is better.  If by “efficient” you mean the operators will allow Python to be faster when traversing complicated data structures, I’m skeptical whether it make any measurable difference in real-world code.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>Exact <code>None</code> semantics</p>\n</blockquote>\n</aside>\n<p>I do think these PEPs elevate <code>None</code> to something even more special than it already is.  With [PEP reference omitted] being introduced in Python 3.15, I wonder if that’s the path we really want to go down.  I could imagine for example, some JSON parsing library choosing to define a sentinel that represents “no value was given”, in which case these PEPs don’t help.  Are we subtly nudging the choice over to the “just use None” side because it’ll work better with these operators, even if there may be some semantic ambiguity, for example, where None could also represent a present-but-null value?  That said, I completely agree with your thoughts against customization.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"33\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>Mixing with <code>and</code> and <code>or</code></p>\n</blockquote>\n</aside>\n<p>It’s hard for me to say what’s best, and I’d be pretty inclined to use parentheses <em>anyway</em> to make my intent clear, even if the default semantics would be identical, your subtle evaluation different not withstanding.  I do think PEP 824 needs more detail in its [PEP reference omitted].  I have no doubt you and Marc have deeply thought about what precedence makes the most sense, so some additional clarity and insight into your thinking there would help the PEP.</p>\n<p>Anyway, those are some of my dozen few notes as I read the PEPs, mostly in response to your points.</p>\n<p>I’ll just close this way too long post by saying that I appreciate how well written the PEPs are and how clearly they make their arguments.  I think people are largely in the pro or con camp with these PEPs, and I’m not sure whether anything will make the consensus on them any clearer.  That’s just how it is.</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-303143-1\" class=\"footnote-item\"><p>trust me, there’s enough to talk about that we routinely bust through our scheduled 90 minute weekly time slot anyway <img src=\"https://emoji.discourse-cdn.com/apple/winking_face_with_tongue.png?v=15\" title=\":winking_face_with_tongue:\" class=\"emoji\" alt=\":winking_face_with_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"> <a href=\"#footnote-ref-303143-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n<li id=\"footnote-303143-2\" class=\"footnote-item\"><p>since, assuming this makes it into Python 3.16, if you have to support older Python’s you can’t use this, which is true of all syntax changes <a href=\"#footnote-ref-303143-2\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n<li id=\"footnote-303143-3\" class=\"footnote-item\"><p>and perhaps mis-remembering! <a href=\"#footnote-ref-303143-3\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "a36b4f5d462de2a87a64d81c006bea1c1cde3f33d9f60b4dbcef2f7f83b7310c"
+    },
+    {
+      "external_id": "303146",
+      "post_number": 37,
+      "url": "https://discuss.python.org/t/109161/37",
+      "created_at": "2026-10-07T04:06:19.463Z",
+      "updated_at": "2026-10-07T04:06:19.463Z",
+      "author": "dr_carlos",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>I do think these PEPs elevate None to something even more special than it already is.  With sentinel values being introduced in Python 3.15, I wonder if that’s the path we really want to go down.  I could imagine for example, some JSON parsing library choosing to define a sentinel that represents “no value was given”, in which case these PEPs don’t help.  Are we subtly nudging the choice over to the “just use None” side because it’ll work better with these operators, even if there may be some semantic ambiguity, for example, where None could also represent a present-but-null value?  That said, I completely agree with your thoughts against customization.</p>\n</blockquote>\n</aside>\n<p>I think this is a really solid point!</p>\n<p><code>None</code> is special. In the past, <code>None</code> has been special enough to deserve its own <code>??</code>/<code>??=</code> operators. But the new sentinels in 3.15 might make <code>None</code> less special, depending on how they are used. Since the full release is still coming, it’s unclear to me how exactly this will play out.</p>\n<p>So, I wonder if it’s best to pause implementing the operators for a little longer (it’s already been 11 years anyway) to see how sentinels change the landscape?</p>",
+      "id": "e439cd8b326df05952c0707fa459db30d32a525722155c29e8cab9fd45860086"
+    },
+    {
+      "external_id": "303152",
+      "post_number": 38,
+      "url": "https://discuss.python.org/t/109161/38",
+      "created_at": "2026-10-07T07:45:06.629Z",
+      "updated_at": "2026-10-07T07:45:06.629Z",
+      "author": "pf_moore",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"32\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I also believe that your argument “people misunderstand it” is stronger in the PEP-823 thread (<code>a?.b</code>) than here (<code>a ?? b</code>)</p>\n</blockquote>\n</aside>\n<p>Agreed. I’d missed that this was the <code>??</code> discussion thread, because the specific post used both operators.</p>\n<p>I’m a little more comfortable with <code>??</code> than with the access operators precisely because they seem to get misinterpreted less often.</p>",
+      "id": "22cd988174860365d452042b132a8a21ecabb2b4e7fd8db0ae52aa6515a0b1ea"
+    },
+    {
+      "external_id": "303293",
+      "post_number": 39,
+      "url": "https://discuss.python.org/t/109161/39",
+      "created_at": "2026-10-08T19:59:31.616Z",
+      "updated_at": "2026-10-08T19:59:31.616Z",
+      "author": "latk",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>I do think these PEPs elevate <code>None</code> to something even more special than it already is. With [PEP reference omitted] being introduced in Python 3.15, I wonder if that’s the path we really want to go down.</p>\n</blockquote>\n</aside>\n<p>I don’t think there’s any obvious alternative Python could choose, but I also don’t think we box us in too bad with <code>??</code>. The <code>if x is None</code> pattern is extremely common, <code>??</code> will be a great help, and this operator has proven itself in many other languages. Python differs from many other languages in that <code>None</code> appears as an ordinary object, but in all practical respects it’s equivalent to C# <code>null</code>, Perl <code>undef</code>, JS/TS <code>null</code>/<code>undefined</code>.</p>\n<p>Personally, I’m very fond of custom sentinels and avoid using <code>None</code> in new APIs, but there’s no good way to extend a <code>??</code> operator to arbitrary sentinels.</p>\n<ul>\n<li>Semantics like <code>if isinstance(x, ANY_SENTINEL)</code> would be wrong – when using sentinels we want to special-case only exactly that one sentinel by identity. In particular, custom sentinels are useful for being able to treat <code>None</code> as a normal value.</li>\n<li>So a more general <code>??</code> version would require a way to specify the sentinel, which turns this into a ternary operator (value, sentinel, fallback). Such syntax may be possible (e.g. <code>value ?? fallback</code> could be a shorthand for something atrocious like <code>value ??[None] fallback</code> or <code>value otherwise(None) fallback</code>), but I don’t believe there can ever be agreement on such a syntax.</li>\n</ul>\n<p>In practice, what I use instead is a sentinel-aware coalesce() function, something similar to this:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def coalesce[T, D, S = None](value: T|S, default: D, *, sentinel: S = None) -&gt; T|D:\n    if value is sentinel:\n        return default\n    return value\n\ncoalesce(value, default)  # value ?? default\ncoalesce(value, default, sentinel=MISSING)  # hypothetical ternary\n</code></pre>\n<p>If a None-only <code>??</code> operator proves popular and demand exists for custom sentinels, then it could perhaps make sense to add a dedicated <em>method</em> on the standard library sentinel type. E.g.:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">MISSING = sentinel(\"MISSING\")\n\nMISSING.coalesce(value, default)  # default if value is MISSING else value\n</code></pre>\n<p>Not as convenient as a dedicated operator, but more convenient than an external function or than spelling out the conditional.</p>",
+      "id": "b485313f572bb8e4406fedf077c487d37e322f372395e0e50de4dc960db40bdf"
+    },
+    {
+      "external_id": "303439",
+      "post_number": 40,
+      "url": "https://discuss.python.org/t/109161/40",
+      "created_at": "2026-10-11T12:11:13.304Z",
+      "updated_at": "2026-10-11T12:11:13.304Z",
+      "author": "tiangolo",
+      "body": "<p>I like this! <img src=\"https://emoji.discourse-cdn.com/apple/rocket.png?v=15\" title=\":rocket:\" class=\"emoji\" alt=\":rocket:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>+1 from me.</p>\n<p>I would use and teach this in FastAPI, Typer, and SQLModel.</p>\n<p>More verbose and similar comment in PEP 823 None-aware access operators: <a href=\"https://discuss.python.org/t/pep-823-none-aware-access-operators/109159/82\" class=\"inline-onebox\">PEP 823: None-aware access operators - #82 by tiangolo</a></p>",
+      "id": "2d47adb9b1488c9a2841f9811d23b88c8531c1288b02e1271d1435a18dfe0a69"
+    },
+    {
+      "external_id": "303473",
+      "post_number": 41,
+      "url": "https://discuss.python.org/t/109161/41",
+      "created_at": "2026-10-12T05:46:19.558Z",
+      "updated_at": "2026-10-13T09:50:06.921Z",
+      "author": "BenjyWiener",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>I do think these PEPs elevate <code>None</code> to something even more special than it already is. With [PEP reference omitted] being introduced in Python 3.15, I wonder if that’s the path we really want to go down. I could imagine for example, some JSON parsing library choosing to define a sentinel that represents “no value was given”, in which case these PEPs don’t help. Are we subtly nudging the choice over to the “just use None” side because it’ll work better with these operators, even if there may be some semantic ambiguity, for example, where None could also represent a present-but-null value? That said, I completely agree with your thoughts against customization.</p>\n</blockquote>\n</aside>\n<p>What about a more verbose yet general <code>x if is [not] None else y</code>? This would naturally extend to sentinels, and reads (almost) like plain English. It is only slightly less verbose than the status quo, but it’s DRY (or DRYer in the assignment case), which to me at least is the biggest advantage of the proposed syntax.</p>",
+      "id": "834a91ec14b90a627cc612748b17f23be8f239fcbbbcb885fba1882b5448f145"
+    },
+    {
+      "external_id": "303714",
+      "post_number": 42,
+      "url": "https://discuss.python.org/t/109161/42",
+      "created_at": "2026-10-15T15:03:11.236Z",
+      "updated_at": "2026-10-15T15:03:11.236Z",
+      "author": "MarkRotchell",
+      "body": "<p>I really like this. One thing I don’t see in the PEP, or in the discussion so far (forgive me if I’ve missed it) is including this in the <code>operator</code> module of the standard library at the same time. Presumably it would be <code>operator.coalesce(a, b)</code> and <code>operator.icoalesce(a, b)</code>? (“COALESCE” is the name given to this in most SQL flavours, including python’s favourite SQLite).</p>",
+      "id": "ba0663a6002e131af7247107257af586f3a0916be988f63ae653778d04eb2dc9"
+    },
+    {
+      "external_id": "303715",
+      "post_number": 43,
+      "url": "https://discuss.python.org/t/109161/43",
+      "created_at": "2026-10-15T15:20:50.678Z",
+      "updated_at": "2026-10-15T15:20:50.678Z",
+      "author": "effigies",
+      "body": "<p>I don’t think you can do <code>icoalesce</code>, since it would either be <code>icoalesce(nonNone, someval)</code> which leaves <code>nonNone</code> unchanged or <code>icoalesce(None, someval)</code>, which can’t mutate <code>None</code>.</p>\n<p>But <code>operator.coalesce</code> seems reasonable to me.</p>",
+      "id": "2a4764e4b6e5f67bc534041abc8eb283d88c0d10be7c8e3285f28e66f8d6e0ba"
+    },
+    {
+      "external_id": "303719",
+      "post_number": 44,
+      "url": "https://discuss.python.org/t/109161/44",
+      "created_at": "2026-10-15T17:23:57.149Z",
+      "updated_at": "2026-10-15T17:23:57.149Z",
+      "author": "tmk",
+      "body": "<p>Aren’t those functions in <code>operator</code> just calling the dunders (<code>__add__</code> and so on)? There’s no dunder proposed here.</p>",
+      "id": "a5fa71c0ffd0ddab1eaca4c822b8d705a53db09bc37dd661e54c520cb43a9742"
+    },
+    {
+      "external_id": "303720",
+      "post_number": 45,
+      "url": "https://discuss.python.org/t/109161/45",
+      "created_at": "2026-10-15T17:30:07.471Z",
+      "updated_at": "2026-10-15T17:30:07.748Z",
+      "author": "MegaIng",
+      "body": "<p>No, <code>operator</code> also implements various other functions, like <code>is_not_none</code>.</p>\n<p>But the module specifically doesn’t implement any operators that short circuit, like <code>a and b</code>, and that’s the category <code>??</code> would be in, so it shouldn’t get a function.</p>",
+      "id": "7d0788af7f33dc6e628be42606d3a9e954167aa58247b808b776c575bb84746c"
+    },
+    {
+      "external_id": "303739",
+      "post_number": 46,
+      "url": "https://discuss.python.org/t/109161/46",
+      "created_at": "2026-10-15T19:22:11.323Z",
+      "updated_at": "2026-10-15T19:22:11.323Z",
+      "author": "mikeshardmind",
+      "body": "<p>Agreed with those who have already said why not on this, but you can write a coalesce function (or inline this, it’s literally 1 line) that behaves like sqlite (first non None from any number of items in an iterable) pretty simply:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def coalesce(it):\n    return next((i for i in it if i is not None), None)\n</code></pre>\n<p>The two argument version proposed as <code>??</code> here is less general, but it’s significantly more likely to be used, probably covers a vast majority of places where people might have <code>None</code>, and want to have something else instead if they do, and makes it more likely people won’t write <code>optional or default</code> when optional might be a non-None falsely value.</p>",
+      "id": "5370d92fe93f8781121208edbbcbb01141941bc0d4867f7bd7477ca833575f76"
+    },
+    {
+      "external_id": "303759",
+      "post_number": 47,
+      "url": "https://discuss.python.org/t/109161/47",
+      "created_at": "2026-10-16T07:44:24.779Z",
+      "updated_at": "2026-10-16T07:44:24.779Z",
+      "author": "MarkRotchell",
+      "body": "<p>Makes sense in hindsight that short-circuit operators wouldn’t be implemented in <code>operator</code> , but it did prompt me to check the docs for <code>operator</code> to see if it’s explained. One can imagine a user going to the docs looking for a function for <code>a and b</code> and scratching their heads about why it’s not there. Maybe an idea to add something to the docs to explain which operators are intentionally not included and why?</p>",
+      "id": "9b4f07abb7ea072a8f87dbb076d73112b050998b752b300cfd891b0bb5058b5e"
+    },
+    {
+      "external_id": "303832",
+      "post_number": 49,
+      "url": "https://discuss.python.org/t/109161/49",
+      "created_at": "2026-10-16T22:02:59.133Z",
+      "updated_at": "2026-10-16T22:02:59.133Z",
+      "author": "guido",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>For <code>a ??= b</code> the PEP defines the semantics as “if a is None, assign b’s value to a”, but it could also incorrectly be interpreted as “assign b to a but only if b is not None”. I don’t think it’s immediately obvious at first glance and I don’t think it’s a slam dunk “learn it once, know it forever”.</p>\n</blockquote>\n</aside>\n<p>Like every other augmented assignment operators, <code>a ??= b</code> means <code>a = a ?? b</code> (without evaluating <code>a</code> twice if it’s more than a plain variable name). Assuming you’ve learned <code>??</code>, there’s nothing new to learn for <code>??=</code>. Maybe the PEP should clarify this, though.</p>\n<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>It definitely gets awkward when trying to clean up data, or traverse JSON fed dictionaries, or deeply nested data structures. I’m just not sure whether the <em>language</em> can help here, or whether a library or functional interface is better. If by “efficient” you mean the operators will allow Python to be faster when traversing complicated data structures, I’m skeptical whether it make any measurable difference in real-world code.</p>\n</blockquote>\n</aside>\n<p>You have to learn a library function too! And we’d have to agree on a name for it. And, given how much effort the world puts in ever-more efficient JSON parsing libraries, I’d say that traversing these without function calls would be a major benefit.</p>\n<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>do think these PEPs elevate <code>None</code> to something even more special than it already is. With [PEP reference omitted] being introduced in Python 3.15, I wonder if that’s the path we really want to go down.</p>\n</blockquote>\n</aside>\n<p>PEP 661 literally gives this as its key motivation: “However, sometimes an alternative sentinel value is needed, usually when it needs to be distinct from <code>None</code> since <code>None</code> is a valid value in that context.” It doesn’t appear to discourage <code>None</code> as a senrtinel – it just offers an alternative when <code>None</code> can’t be used as a sentinel. My position continues to be that <code>None</code> is used as a sentinel in many, many parts of the stdlib and the 3rd party ecosystem, <em>and that there’s nothing wrong with that</em>.</p>\n<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>It’s hard for me to say what’s best, and I’d be pretty inclined to use parentheses <em>anyway</em> to make my intent clear</p>\n</blockquote>\n</aside>\n<p>Yeah, the precedence situation isn’t great; there’s no clear winner. I also want to add that <code>a ?? b ?? c</code> evaluates items one at a time from left to right until one is found that’s not <code>None</code>, or until we’ve reached the last one. (Similar to <code>or</code> and <code>and</code>.)</p>\n<p>Let’s discuss the merits of <code>?.</code> in the PEP 823 thread.</p>",
+      "id": "47298742920a24536fbe0fbba7243803a14f1c3b5bce34a2b1339653278e39fd"
+    },
+    {
+      "external_id": "303847",
+      "post_number": 50,
+      "url": "https://discuss.python.org/t/109161/50",
+      "created_at": "2026-10-17T04:00:49.936Z",
+      "updated_at": "2026-10-17T04:00:49.936Z",
+      "author": "guido",
+      "body": "<p>An early Python contributor sent me two comments on PEP 824.</p>\n<p><strong>One.</strong> It’s nice that we can streamline some initializations using <code>??=</code>, like this:</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">        hour ??= self.hour\n        minute ??= self.minute\n        second ??= self.second\n</code></pre>\n<p>But note that if a different sentinel is used</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">        if tzinfo is True:\n            tzinfo = self.tzinfo\n</code></pre>\n<p>the nice “rhyming” (or “symmetry”) is lost.</p>\n<p>(Personally, I don’t think that this is a strong argument for making the sentinel customizable.)</p>\n<p><strong>Two.</strong> The <code>??=</code> operator could be useful if extended to the walrus, e.g. <code>??:=</code>. Maybe we could add this to the list of deferred ideas. (Though, I think that we’d have to agree on making <em>all</em> augmented assignments also work as augmented walrus, something that PEP 572 declined to do – without much of a rationale.)</p>",
+      "id": "59975aef08af727dbe240fa5ffc70195d52ae686f07448ce808c9afbdccc826f"
+    },
+    {
+      "external_id": "303852",
+      "post_number": 51,
+      "url": "https://discuss.python.org/t/109161/51",
+      "created_at": "2026-10-17T08:05:11.034Z",
+      "updated_at": "2026-10-17T08:05:11.034Z",
+      "author": "dr_carlos",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"50\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>The <code>??=</code> operator could be useful if extended to the walrus, e.g. <code>??:=</code>. Maybe we could add this to the list of deferred ideas. (Though, I think that we’d have to agree on making <em>all</em> augmented assignments also work as augmented walrus, something that PEP 572 declined to do – without much of a rationale.)</p>\n</blockquote>\n</aside>\n<p>That sounds fun! Unfortunately, I think <code>??:=</code> is a bit of a character soup.</p>",
+      "id": "bb0a6d322465f64e41e35594730d58de5cfbcb7da7eaa6c969522c8c2df6710e"
+    },
+    {
+      "external_id": "303884",
+      "post_number": 52,
+      "url": "https://discuss.python.org/t/109161/52",
+      "created_at": "2026-10-17T18:16:22.014Z",
+      "updated_at": "2026-10-18T05:24:21.763Z",
+      "author": "guido",
+      "body": "<p>In the PEP 823 thread, Trey Hunner had an insightful question:</p>\n<aside class=\"quote no-group\" data-username=\"trey\" data-display-name=\"Trey Hunner\" data-post=\"89\" data-topic=\"109159\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/trey/48/20518_2.png\" class=\"avatar\"><a href=\"https://discuss.python.org/t/pep-823-none-aware-access-operators/109159/89\">PEP 823: None-aware access operators</a></div>\n<blockquote>\n<p>It would be nice to see much more detail in the “How to Teach This” section.</p>\n</blockquote>\n</aside>\n<p>I replied there for PEP 823; here’s my corresponding proposal for PEP 824. Again, I’m happy to collaborate on improvements. (But we should leave <em>some</em> work for book/tutorial authors. <img src=\"https://emoji.discourse-cdn.com/apple/slight_smile.png?v=15\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\">)</p>\n<h1><a name=\"p-303884-how-to-teach-this-1\" class=\"anchor\" href=\"#p-303884-how-to-teach-this-1\" aria-label=\"Heading link\"></a>How to Teach This</h1>\n<h2><a name=\"p-303884-basics-2\" class=\"anchor\" href=\"#p-303884-basics-2\" aria-label=\"Heading link\"></a>Basics</h2>\n<p>The <code>??</code> operator is a short-circuit operator like <code>and</code> and <code>or</code> that only checks whether its left argument is <code>None</code>. The others check for truthiness/falsiness, and treat values like <code>0</code>, <code>\"\"</code>, <code>[]</code> as falsy.</p>\n<p>It is equivalent to <code>a if a is not None else b</code>. (Just like <code>a or b</code> is equivalent to <code>a if a else b</code>.)</p>\n<p>Example: <code>d.get(key) ?? make_default(key)</code> is roughly equivalent to <code>d.get(key, make_default(key))</code> except it only evaluate the default when needed. Also, it returns the default when <code>d[key]</code> returns <code>None</code>, while <code>d.get(...)</code> returns <code>None</code> in that case.</p>\n<p>The <code>??=</code> operator is the augmented assignment operator derived from <code>??</code>. <code>a ??= b</code> means the same thing as <code>a = a ?? b</code>, except <code>a</code> is only evaluated once.</p>\n<h2><a name=\"p-303884-chaining-3\" class=\"anchor\" href=\"#p-303884-chaining-3\" aria-label=\"Heading link\"></a>Chaining</h2>\n<p>An expression like <code>a ?? b ?? c ?? d</code> evaluates its sub-expressions (<code>a</code>, <code>b</code>, etc.) from left to right until it finds a value that’s not <code>None</code> or reaches the end.</p>\n<p>Adding parentheses doesn’t change this – <code>(a ?? b) ?? c</code> has the same meaning as <code>a ?? (b ?? c)</code>, since <code>??</code> is an associative operator (Google it :-).</p>\n<h2><a name=\"p-303884-precedence-4\" class=\"anchor\" href=\"#p-303884-precedence-4\" aria-label=\"Heading link\"></a>Precedence</h2>\n<p>The <code>??</code> operator has a lower precedence than <code>or</code> and <code>and</code>. Thus, <code>a or b ?? c</code> means <code>(a or b) ?? c</code> and <code>a ?? b and c</code> means <code>a ?? (b and c)</code>. To get the opposite grouping, use <code>a or (b ?? c)</code>, etc.</p>\n<p>However, this precedence is pretty arbitrary. As a style guide [maybe this could be added to PEP 8] we recommend always adding parentheses when mixing <code>??</code> with <code>and</code> or <code>or</code>.</p>\n<h2><a name=\"p-303884-when-to-use-5\" class=\"anchor\" href=\"#p-303884-when-to-use-5\" aria-label=\"Heading link\"></a>When to use</h2>\n<p>This is useful when you find yourself writing things like <code>a if a is not None else b</code> a lot. The <code>??=</code> operator is handy for providing defaults for arguments, like this:</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">def add_default_user(users: list[User] | None = None) -&gt; list[User]:\n    if users is None:\n        users = []\n    &lt;manipulate users&gt;\n    return users\n</code></pre>\n<p>This can be compacted to</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">def add_default_user(users: list[User] | None = None) -&gt; list[User]:\n    users ??= []\n    &lt;manipulate users&gt;\n    return users\n</code></pre>\n<h2><a name=\"p-303884-when-not-to-use-6\" class=\"anchor\" href=\"#p-303884-when-not-to-use-6\" aria-label=\"Heading link\"></a>When not to use</h2>\n<p>Don’t use this when you also want to check for the other falsy values.</p>",
+      "id": "25e24b53dfd81b57ab7bcea506a4ef40f25e00770f0a7843615fbd7b9bd70ba7"
+    },
+    {
+      "external_id": "303886",
+      "post_number": 53,
+      "url": "https://discuss.python.org/t/109161/53",
+      "created_at": "2026-10-17T19:09:38.833Z",
+      "updated_at": "2026-10-17T19:10:19.620Z",
+      "author": "gnat",
+      "body": "<p>IMHO <code>??:=</code> would be really quite innovative! Perfectly fine for people familiar with both concepts.</p>\n<p>Don’t want it to de-rail the main PEPs, but great thinking.</p>",
+      "id": "63db8aed4f38eeaed301f7c98af2a37f2a0a08f6d7ff2687806288f4e8b43713"
+    },
+    {
+      "external_id": "303893",
+      "post_number": 54,
+      "url": "https://discuss.python.org/t/109161/54",
+      "created_at": "2026-10-17T20:48:34.965Z",
+      "updated_at": "2026-10-17T20:51:21.260Z",
+      "author": "h-vetinari",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"52\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>Example: <code>d.get(key) ?? \"default\"</code> is roughly equivalent to <code>d.get(key, \"default\")</code> except it only evaluate the default when needed. Also, it returns the default when <code>d[key]</code> returns <code>None</code>, while <code>d.get(...)</code> returns <code>None</code> in that case.</p>\n</blockquote>\n</aside>\n<p>I think “only evaluate the default when needed” would be more obvious if it was something other than a string literal <code>\"default\"</code>. Maybe something like:</p>\n<aside class=\"quote no-group\">\n<blockquote>\n<p>Example: <code>d.get(key) ?? get_default()</code> is roughly equivalent to <code>d.get(key, get_default())</code> except it will only evaluate <code>get_default()</code> once <code>None</code> is encountered. This also covers the case where <code>d[key]</code> itself is <code>None</code>, while <code>d.get(key, ...)</code> returns <code>None</code> in that case.</p>\n</blockquote>\n</aside>",
+      "id": "2272309d3224c219ccd1ce44bed12726d6fc6930f62ee4a2cd9cd26404cb864e"
+    },
+    {
+      "external_id": "303895",
+      "post_number": 55,
+      "url": "https://discuss.python.org/t/109161/55",
+      "created_at": "2026-10-17T22:22:27.649Z",
+      "updated_at": "2026-10-17T22:22:27.649Z",
+      "author": "Melendowski",
+      "body": "<p><code>d.get(key) ?? get_default()</code> is equivalent to</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">x = d.get(key)\nif x is None:\n    x = get_default()\n</code></pre>\n<p>That’s very interesting</p>",
+      "id": "da3208484037020abdfe58048236dcc9ae112a3dcc4c1d3ac29681d0d5c6b5fe"
+    },
+    {
+      "external_id": "303899",
+      "post_number": 56,
+      "url": "https://discuss.python.org/t/109161/56",
+      "created_at": "2026-10-17T22:47:09.633Z",
+      "updated_at": "2026-10-17T22:51:36.927Z",
+      "author": "h-vetinari",
+      "body": "<aside class=\"quote no-group quote-modified\" data-username=\"Melendowski\" data-display-name=\"Matt D\" data-post=\"55\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/melendowski/48/2960_2.png\" class=\"avatar\"> Matt D:</div>\n<blockquote>\n<p><code>d.get(key) ?? get_default()</code> is equivalent to […]</p>\n</blockquote>\n</aside>\n<p>You’re correct in terms of the number of calls to <code>get_default()</code>. But just to be sure, in terms of outcome, it’d be equivalent to</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">x = d.get(key, get_default())  # get_default() is always evaluated here\nif x is None:\n    x = get_default()\n</code></pre>\n<p>This obviously differs in the number of calls to <code>get_default()</code><sup class=\"footnote-ref\"><a href=\"#footnote-303899-1\" id=\"footnote-ref-303899-1\">[1]</a></sup></p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-303899-1\" class=\"footnote-item\"><p>which becomes relevant if <code>get_default()</code> has side-effects <a href=\"#footnote-ref-303899-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "d8f27dd4be74a1724670f31a2b064e27d0f3e059cf9401c77a53e6b7123ca8e9"
+    },
+    {
+      "external_id": "303902",
+      "post_number": 57,
+      "url": "https://discuss.python.org/t/109161/57",
+      "created_at": "2026-10-17T23:53:20.032Z",
+      "updated_at": "2026-10-17T23:53:20.032Z",
+      "author": "guido",
+      "body": "<aside class=\"quote no-group quote-modified\" data-username=\"h-vetinari\" data-display-name=\"H. Vetinari\" data-post=\"56\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/h-vetinari/48/1220_2.png\" class=\"avatar\"> H. Vetinari:</div>\n<blockquote>\n<p>You’re correct in terms of the number of calls to <code>get_default()</code>. But just to be sure, in terms of outcome, it’d be equivalent to</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">x = d.get(key, get_default())  # get_default() is always evaluated here\nif x is None:\n    x = get_default()\n\n</code></pre>\n<p>This obviously differs in the number of calls to <code>get_default()</code></p>\n<hr>\n<ol>\n<li>which becomes relevant if <code>get_default()</code> has side-effects <a href=\"#footnote-ref-303899-1\"><img src=\"https://emoji.discourse-cdn.com/apple/right_arrow_curving_left.png?v=15\" title=\":right_arrow_curving_left:\" class=\"emoji\" alt=\":right_arrow_curving_left:\" loading=\"lazy\" width=\"20\" height=\"20\">︎</a></li>\n</ol>\n</blockquote>\n</aside>\n<p>Yeah, the whole thing is only relevant when evaluating the default twice is noticeable (either semantically or in performance).</p>\n<p>But I don’t understand why you’re insisting on adding the <code>get_default()</code> call to the <code>get()</code> call. The whole point of using <code>??</code> is to avoid evaluating the default twice, so why are you saying the equivalent requires evaluating it at least once? <code>d.get(key)</code> returns <code>None</code> when <code>key</code> doesn’t exist; the explicit <code>None</code> test is checking for that <code>None</code>.</p>\n<p>AFAIK the definition for <code>get</code> is roughly this:</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">def get(self, key, default=None):\n    if key not in self:\n        return default\n    return self[key]\n</code></pre>\n<p>(which still checks for presence of <code>key</code> twice, but the actual implementation probably avoids that).</p>",
+      "id": "4d0ba69c0a2b38f6dcb91ef2329bb46b1797fcd181417f28d28ab7f23de08d0c"
+    },
+    {
+      "external_id": "303903",
+      "post_number": 58,
+      "url": "https://discuss.python.org/t/109161/58",
+      "created_at": "2026-10-18T02:10:45.723Z",
+      "updated_at": "2026-10-18T02:10:45.723Z",
+      "author": "h-vetinari",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"57\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I don’t understand why you’re insisting on adding the <code>get_default()</code> call to the <code>get()</code> call.</p>\n</blockquote>\n</aside>\n<p>Not insisting on anything, it’s just that</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"57\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>The whole point of using <code>??</code> is to avoid evaluating the default twice,</p>\n</blockquote>\n</aside>\n<p>is confusing to me, if the default in question is a string literal, where “evaluation” is a bit abstract. Unless I’m fundamentally misunderstanding you or the PEP, I think it’s clearer for the sake of expositon if the default is something where evaluation clearly does something, like a function call.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"57\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>so why are you saying the equivalent requires evaluating it at least once? <code>d.get(key)</code> returns <code>None</code> when <code>key</code> doesn’t exist; the explicit <code>None</code> test is checking for that <code>None</code>.</p>\n</blockquote>\n</aside>\n<p>I think I had misconstrued a corner case in my head w.r.t. to the <em>value</em> of the equivalent formulation in contemporary Python; either way, I agree that the <code>??</code> formulation only needs evaluation of the fallback <em>at most once</em>.</p>",
+      "id": "32eb3c6b929348400a2f0c8711f76fd62a01038f5cfd4e2a80352b9be6677551"
+    },
+    {
+      "external_id": "303907",
+      "post_number": 59,
+      "url": "https://discuss.python.org/t/109161/59",
+      "created_at": "2026-10-18T05:24:57.099Z",
+      "updated_at": "2026-10-18T05:24:57.099Z",
+      "author": "guido",
+      "body": "<p>I’ve updated my post above to use <code>make_default(key)</code> instead of just <code>\"default\"</code>.</p>",
+      "id": "250c174a88af1b2dc437e3140f39216c7051eb7f064b89b2771ca7febefe9478"
+    },
+    {
+      "external_id": "303936",
+      "post_number": 60,
+      "url": "https://discuss.python.org/t/109161/60",
+      "created_at": "2026-10-18T18:51:37.133Z",
+      "updated_at": "2026-10-18T18:51:37.133Z",
+      "author": "svioletg",
+      "body": "<p>I think <code>??:=</code> has potential to be useful, but four characters to a symbol does feel a little cumbersome to me. I would agree with deferring it regarding 824 specifically, I think this PEP is already somewhat of a hard sell for some folks and in honesty a coalescing walrus operator probably wouldn’t help that case?</p>",
+      "id": "16e3db98bac4d7c121b31549181554ef2e5f3997d21e7eaa33a9556cb2a7ca3e"
+    },
+    {
+      "external_id": "303944",
+      "post_number": 61,
+      "url": "https://discuss.python.org/t/109161/61",
+      "created_at": "2026-10-18T22:28:20.044Z",
+      "updated_at": "2026-10-18T22:28:20.044Z",
+      "author": "BrenBarn",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"50\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>The <code>??=</code> operator could be useful if extended to the walrus, e.g. <code>??:=</code>.</p>\n</blockquote>\n</aside>\n<p>The “double Elvis walrus”?</p>",
+      "id": "6b5f6f2e7f4109379e6adacc4fd922736750048a7422d144a952d4c12c906fe3"
+    },
+    {
+      "external_id": "303990",
+      "post_number": 62,
+      "url": "https://discuss.python.org/t/109161/62",
+      "created_at": "2026-10-19T14:25:14.219Z",
+      "updated_at": "2026-10-19T14:25:26.962Z",
+      "author": "MarkRotchell",
+      "body": "<p>If a walrus none-coalescing operator is on the table at some point, how about an XOR none-coalescing operator, say <code>?^</code>. Could be used for checking argument combinations:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def sample(data: list, n: int=None, frac: float=None):\n    if n ?^ frac is None:\n        raise ValueError('You must provide either n or frac but not both')\n    ...\n</code></pre>\n<p>Probably a step too far.</p>",
+      "id": "5fef582626b4583b8bb1c8f8f2e6241a0251e8bb803a1ba0516e266b67b441c2"
+    },
+    {
+      "external_id": "304015",
+      "post_number": 63,
+      "url": "https://discuss.python.org/t/109161/63",
+      "created_at": "2026-10-19T20:20:17.576Z",
+      "updated_at": "2026-10-19T20:50:01.203Z",
+      "author": "Dutcho",
+      "body": "<p>Most likely you’d want to separate the <code>n is None</code> case from the <code>frac is None</code> case <em>anyhow</em>. That logic yields the “neither” and “both” cases almost automatically.<br>\nE.g.,</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def sample(data: list, n: int | None = None, frac: float | None = None):\n    match n, frac:\n        case int(), None if 0 &lt;= n &lt;= len(data):\n            pass\n        case None, float() if 0 &lt;= frac &lt;= 1:\n            n = round(frac * len(data))\n        case _:\n            raise ValueError('You must provide either n in [0, len(data)] interval, '\n                             'or frac in [0, 1] interval, but not both')\n    ...\n</code></pre>\n<p>[<strong>edit</strong>: more succinct with guards]</p>",
+      "id": "7e1fa0bd156323ce4fc0efd77d7f287483aeb3843566bcb7cc45a0fdcb287528"
+    },
+    {
+      "external_id": "304073",
+      "post_number": 64,
+      "url": "https://discuss.python.org/t/109161/64",
+      "created_at": "2026-10-20T09:09:02.172Z",
+      "updated_at": "2026-10-20T09:09:02.172Z",
+      "author": "hprodh",
+      "body": "<p>I think some mutex mechanics is better in this case, something along this line :</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">match mutex(n, frac, m):\n    case x if x is n: ...\n    case x if x is frac: ...\n    case x if x is m: ...\n</code></pre>\n<p>But this is indeed a step too far here</p>",
+      "id": "d7e55e25eb436a9cf976312112c4cace42670f88bedf64de1be98634d2f2bbd0"
+    },
+    {
+      "external_id": "304085",
+      "post_number": 65,
+      "url": "https://discuss.python.org/t/109161/65",
+      "created_at": "2026-10-20T11:37:34.757Z",
+      "updated_at": "2026-10-20T11:37:34.757Z",
+      "author": "MarkRotchell",
+      "body": "<p>True, though I guess if you’re being that robust at runtime you might as well get the type checker involved as well:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">from typing import overload\n\n@overload\ndef sample[T](data: list[T], *, frac: float) -&gt; list[T]: ...\n\n@overload\ndef sample[T](data: list[T], *, n: int) -&gt; list[T]: ...\n\ndef sample[T](data: list[T], *, n: int | None = None, frac: float | None = None) -&gt; list[T]:\n    ...\n</code></pre>",
+      "id": "1f7304af71b2e078d9da4fff866dac08e137bbe962146b509c843f4ad4ad5ded"
+    },
+    {
+      "external_id": "304100",
+      "post_number": 66,
+      "url": "https://discuss.python.org/t/109161/66",
+      "created_at": "2026-10-20T14:26:00.623Z",
+      "updated_at": "2026-10-20T14:26:00.623Z",
+      "author": "MarkRotchell",
+      "body": "<aside class=\"quote no-group\" data-username=\"latk\" data-display-name=\"Lukas Atkinson  (they/them)\" data-post=\"39\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/latk/48/22939_2.png\" class=\"avatar\"> Lukas Atkinson  (they/them):</div>\n<blockquote>\n<p>If a None-only <code>??</code> operator proves popular and demand exists for custom sentinels, then it could perhaps make sense to add a dedicated <em>method</em> on the standard library sentinel type. E.g.:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">MISSING = sentinel(\"MISSING\")\n\nMISSING.coalesce(value, default)  # default if value is MISSING else value\n\n</code></pre>\n<p>Not as convenient as a dedicated operator, but more convenient than an external function or than spelling out the conditional.</p>\n</blockquote>\n</aside>\n<p>As mentioned by others in the discussion of the <code>operator</code> module above, the drawback of a function/method, is that you lose the short circuit ability of an operator, so you’d presumably still see <code>if value is MISSING</code> when you want to short circuit. Or, perhaps an idiom might develop where <code>None</code> is used for parameters where you want short-circuit behavior, but I suspect that’s less likely.</p>\n<p>Could we give sentinels “operator members”, so that you could do something like <code>a MISSING.?? b</code> and <code>a MISSING.??= b</code>? But I’m not sure I like that (and don’t even know if it’s possible/breaks stuff).</p>",
+      "id": "649944606f671e00ecff6c22e2f02fdfccc1f27911e9ec7d19eadc15935e5b30"
+    },
+    {
+      "external_id": "304121",
+      "post_number": 67,
+      "url": "https://discuss.python.org/t/109161/67",
+      "created_at": "2026-10-20T16:57:42.973Z",
+      "updated_at": "2026-10-20T17:00:05.678Z",
+      "author": "ThomasP",
+      "body": "<p>If I’m understanding correctly, <code>X ??:= Y</code> is a bit confusing, as it would require <code>X</code> to already be defined, whereas that isn’t necessary for <code>X := Y</code>.  Bit of an asymmetry there.</p>\n<p>I suppose this could open the door to other modified walrus operators…</p>",
+      "id": "1962571b72bcb1026cd9d2e4d2ef56ad74c1c4ee09fb2e373d0b95436de71aed"
+    },
+    {
+      "external_id": "304138",
+      "post_number": 68,
+      "url": "https://discuss.python.org/t/109161/68",
+      "created_at": "2026-10-20T18:17:56.510Z",
+      "updated_at": "2026-10-20T20:46:30.342Z",
+      "author": "guido",
+      "body": "<p>Folks, <code>??:=</code> is at best a possible separate future PEP. It’s not part of this PEP (824). Further discussion of it is pointless.</p>",
+      "id": "c86d626fd9c5f8095392fd138db5258c952996b6544d3283196b65c5400cc897"
+    },
+    {
+      "external_id": "304143",
+      "post_number": 69,
+      "url": "https://discuss.python.org/t/109161/69",
+      "created_at": "2026-10-20T18:30:19.523Z",
+      "updated_at": "2026-10-20T18:30:19.523Z",
+      "author": "guido",
+      "body": "<p>I have updated the PEP with a [PEP reference omitted] inspired by what I suggested in this thread.</p>",
+      "id": "914d3d38c601964e44e0b934412b72a68e9228729806878197721ae095b48037"
+    },
+    {
+      "external_id": "304261",
+      "post_number": 70,
+      "url": "https://discuss.python.org/t/109161/70",
+      "created_at": "2026-10-21T20:30:43.566Z",
+      "updated_at": "2026-10-21T20:30:43.566Z",
+      "author": "Wombat",
+      "body": "<aside class=\"quote no-group\" data-username=\"cdce8p\" data-display-name=\"Marc Mueller\" data-post=\"1\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/cdce8p/48/3575_2.png\" class=\"avatar\"> Marc Mueller:</div>\n<blockquote>\n<p>This PEP proposes adding two new operators.</p>\n<ul>\n<li>The “<code>None</code>-coalescing” operator <code>??</code></li>\n<li>The “<code>None</code>-coalescing assignment” operator <code>??=</code></li>\n</ul>\n</blockquote>\n</aside>\n<p><code>None</code>-coalescing seemed more reasonable before PEP 661 Sentinel Values was accepted.</p>\n<p>Does it still make sense to hardwire new operators to <code>None</code>? It is no longer the only placeholder in town.</p>",
+      "id": "ffca4dd33672996b0692c11bf0fa03b3a6f40ebafd3715f37e109d9333f36b5d"
+    },
+    {
+      "external_id": "304274",
+      "post_number": 71,
+      "url": "https://discuss.python.org/t/109161/71",
+      "created_at": "2026-10-21T22:18:24.000Z",
+      "updated_at": "2026-10-21T22:18:40.669Z",
+      "author": "dmoisset",
+      "body": "<p>If this PEP gets approved, it could make sense to add a method to sentinels roughly like this:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def check(self, value, default=None): # probably there's a better name for this\nreturn default if value is self else value\n</code></pre>\n<p>having that, you could use sentinels with ?? like this</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">MISSING = sentinel(\"MISSING\")\ndef example(value: str | MISSING):\nx = MISSING.check(value) ?? \"default\"\n</code></pre>\n<p>or even avoid it entirely <code>MISSING.check(value, \"default\")</code> (but that one does not short circuit if the default computation is not always desirable, which is one of the benefits of ??).</p>\n<p>I’m not saying this PEP should include that (IMO, it shouldn’t), but pointing that the benefits of this PEP have an open door to onboard sentinels later if that’s considered valuable.</p>",
+      "id": "3fe0ad1b2a1d2d0d13bfc90f73273665e8c86d3302bb96c5d7c9e528e0d1eb19"
+    },
+    {
+      "external_id": "304279",
+      "post_number": 72,
+      "url": "https://discuss.python.org/t/109161/72",
+      "created_at": "2026-10-21T22:31:27.103Z",
+      "updated_at": "2026-10-21T22:31:27.103Z",
+      "author": "svioletg",
+      "body": "<p>Sentinel values already existed before the built-in type was added, people just made their own. Sentinels might become more common, but I don’t see <code>None</code> falling out of widespread use any time soon, and I think there’s still lots of merit to making its handling more ergonomic.</p>",
+      "id": "ea5598cc3ec95f40fd3b00d77d5e056c02051c166c3b2ad75b3966bd6fdc409b"
+    },
+    {
+      "external_id": "304307",
+      "post_number": 73,
+      "url": "https://discuss.python.org/t/109161/73",
+      "created_at": "2026-10-22T08:45:23.837Z",
+      "updated_at": "2026-10-22T08:45:23.837Z",
+      "author": "DavidCEllis",
+      "body": "<aside class=\"quote no-group\" data-username=\"dmoisset\" data-display-name=\"Daniel F Moisset\" data-post=\"71\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/dmoisset/48/2129_2.png\" class=\"avatar\"> Daniel F Moisset:</div>\n<blockquote>\n<p>If this PEP gets approved, it could make sense to add a method to sentinels roughly like this:</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">def check(self, value, default=None): # probably there's a better name for this\nreturn default if value is self else value\n</code></pre>\n<p>having that, you could use sentinels with ?? like this</p>\n<pre data-code-wrap=\"python\"><code class=\"lang-python\">MISSING = sentinel(\"MISSING\")\ndef example(value: str | MISSING):\nx = MISSING.check(value) ?? \"default\"\n</code></pre>\n<p>or even avoid it entirely <code>MISSING.check(value, \"default\")</code> (but that one does not short circuit if the default computation is not always desirable, which is one of the benefits of ??).</p>\n</blockquote>\n</aside>\n<p>Worth noting that <code>MISSING.check(MISSING)</code> will give the same result as <code>MISSING.check(None)</code>, both will be <code>None</code>.</p>\n<p>Usually if I’m using a sentinel it’s because I need to distinguish it from <code>None</code> as <code>None</code> has a valid meaning in the context. This example of <code>??</code> won’t distinguish between <code>value</code> being <code>MISSING</code> or <code>None</code> so I’m not sure it’s that useful in cases where you <em>need</em> a sentinel because you can’t use <code>None</code>.</p>\n<p>Once it is necessary to have to use the default argument I don’t think it saves you much over writing the ternary yourself.</p>\n<hr>\n<p>I’m kind of neutral on this PEP as a whole. I’d probably use it but mostly so I can remember what it means.</p>",
+      "id": "80561cce027ea6e565cdc977d34edfd95e96766b73cec306e295d7559a0ab614"
+    },
+    {
+      "external_id": "305072",
+      "post_number": 74,
+      "url": "https://discuss.python.org/t/109161/74",
+      "created_at": "2026-11-01T12:43:23.077Z",
+      "updated_at": "2026-11-01T12:43:23.077Z",
+      "author": "cdce8p",
+      "body": "<p>The latest PEP update is live with minor changes based on the discussion. You can find all changes in the <a href=\"https://github.com/python/peps/pull/5212/changes\" rel=\"noopener nofollow ugc\">PR</a>. A short summary:</p>\n<ul>\n<li>Added section on [PEP reference omitted] to the specification.</li>\n<li>Added [PEP reference omitted] and [PEP reference omitted] as deferred ideas.</li>\n<li>Added [PEP reference omitted] as rejected idea.</li>\n</ul>\n<hr>\n<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"36\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>I do think PEP 824 needs more detail in its [PEP reference omitted].</p>\n</blockquote>\n</aside>\n<p><code>??</code> could also be described as a specialized <code>or</code> operator just of <code>None</code>. As such its precedence should match that of <code>or</code> but slightly weaker. This means <code>or</code> can easily be replaced with <code>??</code> where appropriate without any surprises. It also matches the precedence of JS and C#.</p>\n<p>While we could require parentheses when mixing <code>??</code> and <code>or</code> / <code>and</code>, it’s not a necessity required by the grammar. Though it’s encouraged for added clarity, similar to how linters have started to add parentheses when mixing <code>and</code> and <code>or</code>.</p>",
+      "id": "99ec33211eaba0a2ecc897a11a51e1860297b2d674e87805030408653a26d281"
+    },
+    {
+      "external_id": "305084",
+      "post_number": 75,
+      "url": "https://discuss.python.org/t/109161/75",
+      "created_at": "2026-11-01T17:45:14.067Z",
+      "updated_at": "2026-11-01T17:45:14.067Z",
+      "author": "barry",
+      "body": "<aside class=\"quote no-group\" data-username=\"cdce8p\" data-display-name=\"Marc Mueller\" data-post=\"74\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/cdce8p/48/3575_2.png\" class=\"avatar\"> Marc Mueller:</div>\n<blockquote>\n<p>As such its precedence should match that of <code>or</code> but slightly weaker.</p>\n</blockquote>\n</aside>\n<p>It’s the “but slightly weaker” part that I think needs at least <em>some</em> discussion in the PEP.</p>",
+      "id": "2c7e0e8ae1009bdbc2b6f5176352729a3e3d42c2d3013c1ec63ed95b71e80113"
+    },
+    {
+      "external_id": "305097",
+      "post_number": 76,
+      "url": "https://discuss.python.org/t/109161/76",
+      "created_at": "2026-11-02T00:26:36.836Z",
+      "updated_at": "2026-11-02T00:27:20.280Z",
+      "author": "cdce8p",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"75\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>It’s the “but slightly weaker” part that I think needs at least <em>some</em> discussion in the PEP.</p>\n</blockquote>\n</aside>\n<p>My intuitive understanding here was that the more specialized a boolean operator is, the weaker its precedence needs to be for grouping to work as expected and <code>??</code> can basically be seen as a specialized version of <code>or</code> (however just for <code>None</code>). <em>If-expressions are more specialized than <code>and</code> / <code>or</code> and <code>??</code>. So the precedence should be even lower.</em></p>\n<p>AI came up with this example, though I do think it illustrates the problem fairly well what would happen if the precedences for <code>or</code> and <code>??</code> were reversed:</p>\n<blockquote>\n<p><strong>The Real Breaking Case: <code>user_name ?? default_name or \"Guest\"</code></strong></p>\n<p>Imagine you are fetching an optional configuration value.<br>\n• <code>user_name</code> could be <code>None</code> (missing), <code>\"\"</code> (explicitly cleared by user), or <code>\"Bob\"</code> (valid).<br>\n• If it is completely missing (<code>None</code>), you want to check <code>default_name</code>.<br>\n• If <code>default_name</code> is also empty or missing, you want to fall back to the string <code>\"Guest\"</code>.<br>\nLet’s test this with <code>user_name = \"\"</code> (the user explicitly saved an empty string) and <code>default_name = \"Alice\"</code>.</p>\n<p><strong>If or binds tighter than ?? (PEP 824 Proposal)</strong></p>\n<p>The expression is evaluated as: <code>user_name ?? (default_name or \"Guest\")</code></p>\n<ol>\n<li>Python evaluates the left side: user_name is <code>\"\"</code>.</li>\n<li>Because <code>\"\"</code> is not None, the ?? operator short-circuits.</li>\n<li>Result: <code>\"\"</code> (The user’s explicit empty string is preserved).</li>\n</ol>\n<p><strong>If ?? binds tighter than or</strong></p>\n<p>The expression is evaluated as: <code>(user_name ?? default_name) or \"Guest\"</code></p>\n<ol>\n<li>Python evaluates the left group first: <code>user_name ?? default_name</code>.</li>\n<li>Since user_name is <code>\"\"</code> (which is not None), this group evaluates to <code>\"\"</code>.</li>\n<li>Now, the remaining expression is: <code>\"\" or \"Guest\"</code>.</li>\n<li>Because <code>\"\"</code> is falsy, the or operator triggers and moves to the right side.</li>\n<li>Result: <code>\"Guest\"</code></li>\n</ol>\n</blockquote>\n<p>And even the conclusion was spot on:</p>\n<blockquote>\n<p><strong>Why this breaks expectations</strong></p>\n<p>If <code>??</code> binds tighter than <code>or</code>, it destroys the ability to preserve falsy values (like <code>\"\"</code> or <code>0</code>) earlier in the chain. The loose <code>or</code> at the end acts like a giant vacuum, overriding the strict None checks that happened to its left.</p>\n<p>To keep the evaluation flowing strictly from left to right as an associative fallback chain, <code>??</code> must have a lower precedence than <code>or</code>. This ensures that any <code>or</code> operations finish grouping their truthy checks before <code>??</code> makes its final determination about whether the resulting value is strictly <code>None</code>.</p>\n</blockquote>",
+      "id": "adc9d0b55b2bf14af831bdc0600e8c0975f63d95e44814f76ad1db7a329acc4a"
+    },
+    {
+      "external_id": "305101",
+      "post_number": 77,
+      "url": "https://discuss.python.org/t/109161/77",
+      "created_at": "2026-11-02T05:18:45.389Z",
+      "updated_at": "2026-11-02T05:18:45.389Z",
+      "author": "guido",
+      "body": "<aside class=\"quote no-group quote-modified\" data-username=\"cdce8p\" data-display-name=\"Marc Mueller\" data-post=\"76\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/cdce8p/48/3575_2.png\" class=\"avatar\"> Marc Mueller:</div>\n<blockquote>\n<p>[Quoting AI]</p>\n<blockquote>\n<p>To keep the evaluation flowing strictly from left to right as an associative fallback chain, <code>??</code> must have a lower precedence than <code>or</code>. This ensures that any <code>or</code> operations finish grouping their truthy checks before <code>??</code> makes its final determination about whether the resulting value is strictly <code>None</code>.</p>\n</blockquote>\n</blockquote>\n</aside>\n<p>I’m not super convinced by the AI (it carefully picked an example where requiring <code>or</code> to bind tighter than <code>??</code> works out best), but it gave me an out-of-the-box idea.</p>\n<p>There’s no reason that each operator should have a unique precedence – <code>+</code> and <code>-</code> have the same, as do <code>*</code> and <code>/</code> and <code>//</code>.</p>\n<p>Since we appear to agree that <code>??</code> is <strong>a variant of</strong> <code>or</code>, why not give them the <strong>same</strong> priority? Then in a sequence of <code>??</code> and <code>or</code> operators the rule to follow is simply from left to right (just as it is for a sequence of just <code>??</code> or a sequence of just <code>or</code>) – the sequence will just return the first operand whose condition causes a shortcut to be taken. (Where the condition for <code>a ?? b</code> is <code>a is not None</code> and the condition for <code>a or b</code> is <code>a</code>, i.e., <code>bool(a) != False</code>.)</p>\n<p>This leads to the same answer in the AI’s example, and feels easier to explain or to understand intuitively.</p>\n<p>Are the two operators mutually associative? They are not: <code>(a ?? b) or c</code> does not always have the same outcome as <code>a ?? (b or c)</code>, see the AI’s example. I’m not sure if that matters to anyone, but if it does, forget what I wrote.</p>",
+      "id": "196379c66bbf178c2155359364d8e35d8d4560f2576604130b8b01fa837bef43"
+    },
+    {
+      "external_id": "305103",
+      "post_number": 78,
+      "url": "https://discuss.python.org/t/109161/78",
+      "created_at": "2026-11-02T06:05:25.466Z",
+      "updated_at": "2026-11-02T06:05:25.466Z",
+      "author": "Jelle",
+      "body": "<p>For what it’s worth I’d expect <code>??</code> to bind tighter than <code>or</code>. Punctuation feels like it keeps the operands closer together than a word does. It’s mostly true in Python today that operators that use punctuation bind tighter than those that use words: <a href=\"https://docs.python.org/3/reference/expressions.html#operator-precedence\" class=\"inline-onebox\">6. Expressions — Python 3.15.2 documentation</a> (with some exceptions, notably <code>await</code> and <code>:=</code>).</p>",
+      "id": "969d40a40ea4ce0a17c77c743b0cdb4391368d7674f37063df27f34b27fa6ad5"
+    },
+    {
+      "external_id": "305104",
+      "post_number": 79,
+      "url": "https://discuss.python.org/t/109161/79",
+      "created_at": "2026-11-02T07:07:58.181Z",
+      "updated_at": "2026-11-02T07:29:27.912Z",
+      "author": "hprodh",
+      "body": "<p><code>??</code> has a finer grain filtering than <code>or</code>, it only filters out the <code>None</code>s.</p>\n<p>Applying <code>??</code> after <code>or</code> will thus basically be useless, for example, in <code>r = a or b ?? c</code>, <code>c</code> will only be used if both <code>a</code> and <code>b</code> are <code>None</code>, thus the <code>??</code> is no more useful than <code>or</code> here.</p>\n<p>Usually, one wants to replace specifically the <code>None</code> values first, and replace the falsy values afterwards.</p>\n<p>The concept of “specialization” introduced above can be interpreted as a concept of “filtering thinness”.</p>",
+      "id": "975eb73f65b7e6f3ac1e04c1ba0bf5c377d2c42caa25963078bc6c678ba6af4d"
+    },
+    {
+      "external_id": "305108",
+      "post_number": 80,
+      "url": "https://discuss.python.org/t/109161/80",
+      "created_at": "2026-11-02T09:23:41.633Z",
+      "updated_at": "2026-11-02T09:23:41.633Z",
+      "author": "hugovk",
+      "body": "<p>Note: this PEP has been submitted to the Steering Council for a decision: <a href=\"https://github.com/python/steering-council/issues/375\">python/steering-council#375</a>.</p>",
+      "id": "a5b4bf6dd4266b40d3de9f90cd8cab0340ed78e50e14e70a6a4a2cf934cee0b7"
+    },
+    {
+      "external_id": "305127",
+      "post_number": 81,
+      "url": "https://discuss.python.org/t/109161/81",
+      "created_at": "2026-11-02T13:41:15.930Z",
+      "updated_at": "2026-11-02T13:41:15.930Z",
+      "author": "cdce8p",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"77\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I’m not super convinced by the AI (it carefully picked an example where requiring <code>or</code> to bind tighter than <code>??</code> works out best)</p>\n</blockquote>\n</aside>\n<p>Correct, it’s helpful to keep in mind though that in most cases there is actually no difference at all since both operators are associative and <code>or</code> handles <code>None</code> as well. What’s left is just the case the example highlighted: <code>a ?? b or c</code> where <code>a</code> is a falsy value but <strong><code>not None</code></strong>.</p>\n<p>Looking at the example from another way, say <code>??</code> binds tighter, i.e. <code>(user_name ?? default_name) or \"Guest\"</code></p>\n<ol>\n<li>For <code>username = \"\"</code> and <code>default_name = \"Alice\"</code></li>\n<li>The group would evaluate to <code>\"\"</code></li>\n<li>The remaining expression to <code>\"Guest\"</code> since <code>\"\"</code> is falsy</li>\n</ol>\n<p>The <code>default_name</code> even though specified, would always be skipped. A tighter precedence breaks the fallback chain for any first falsy value other than <code>None</code>.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"77\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>There’s no reason that each operator should have a unique precedence – <code>+</code> and <code>-</code> have the same, as do <code>*</code> and <code>/</code> and <code>//</code>.</p>\n</blockquote>\n</aside>\n<p>That only works because addition and multiplication are commutative. <code>a + b - c = a - c + b</code>. For <code>??</code> the same precedence would actually work the same as having a stronger precedence than <code>or</code> (binding more tightly). That’s because <code>(a or b) ?? c == a or (b ?? c)</code> always evaluate the same since <code>or</code> handles <code>None</code> as well. So it’s only <code>(a ?? b) or c</code> and <code>a ?? (b or c)</code> which is different. The exact issue describe in the example above.</p>\n<hr>\n<p>Let’s take a step back to look at how other programming languages handle it:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th>Language</th>\n<th>Precedence</th>\n<th>Implicit parsing behavior</th>\n<th>Requires grouping?</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>[PEP reference omitted]</td>\n<td>Weaker than <code>or</code></td>\n<td><code>a ?? (b or c)</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n<tr>\n<td><a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_precedence#table\" rel=\"noopener nofollow ugc\">JS / TS</a></td>\n<td>Same tier as <code>||</code></td>\n<td>Syntax error</td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/white_check_mark.png?v=16\" title=\":white_check_mark:\" class=\"emoji\" alt=\":white_check_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"> When mixing with <code>&amp;&amp;</code> or <code>||</code></td>\n</tr>\n<tr>\n<td><a href=\"https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/operators/#operator-precedence\" rel=\"noopener nofollow ugc\">C#</a></td>\n<td>Weaker than <code>||</code></td>\n<td><code>a ?? (b || c)</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n<tr>\n<td><a href=\"https://www.php.net/manual/en/language.operators.precedence.php\" rel=\"noopener nofollow ugc\">PHP</a></td>\n<td>Weaker than <code>||</code></td>\n<td><code>a ?? (b || c)</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n<tr>\n<td><a href=\"https://dart.dev/language/operators\" rel=\"noopener nofollow ugc\">Dart</a></td>\n<td>Weaker than <code>||</code></td>\n<td><code>a ?? (b || c)</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n<tr>\n<td><a href=\"https://www.programiz.com/swift-programming/operator-precedence-associativity\" rel=\"noopener nofollow ugc\">Swift</a></td>\n<td>Tighter than both <code>&amp;&amp;</code> and <code>||</code></td>\n<td><code>(a ?? b) || c</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n<tr>\n<td><a href=\"https://kotlinlang.org/grammar/#expressions\" rel=\"noopener nofollow ugc\">Kotlin</a></td>\n<td>Tighter than both <code>&amp;&amp;</code> and <code>||</code></td>\n<td><code>(a ?: b) || c</code></td>\n<td><img src=\"https://emoji.discourse-cdn.com/apple/cross_mark.png?v=16\" title=\":cross_mark:\" class=\"emoji only-emoji\" alt=\":cross_mark:\" loading=\"lazy\" width=\"20\" height=\"20\"></td>\n</tr>\n</tbody>\n</table>\n</div><p>And in the context of the Python <a href=\"https://docs.python.org/3/reference/expressions.html\" rel=\"noopener nofollow ugc\">operator precedence</a>:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th>Operator</th>\n<th>Description</th>\n<th></th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>..</td>\n<td>..</td>\n<td></td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td>Swift, Kotlin</td>\n</tr>\n<tr>\n<td><code>is</code>, <code>is not</code>, …</td>\n<td>Comparisons, including identity tests</td>\n<td></td>\n</tr>\n<tr>\n<td><code>not x</code></td>\n<td>Boolean NOT</td>\n<td></td>\n</tr>\n<tr>\n<td><code>and</code></td>\n<td>Boolean AND</td>\n<td></td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td><sup class=\"footnote-ref\"><a href=\"#footnote-305127-1\" id=\"footnote-ref-305127-1\">[1]</a></sup></td>\n</tr>\n<tr>\n<td><code>or</code></td>\n<td>Boolean OR</td>\n<td></td>\n</tr>\n<tr>\n<td></td>\n<td></td>\n<td>PEP 824, C#, PHP, Dart, (JS)</td>\n</tr>\n<tr>\n<td><code>if</code> - else</td>\n<td>Conditional expression</td>\n<td></td>\n</tr>\n</tbody>\n</table>\n</div><p>If we assume that <code>??</code> should be a boolean operator as it’s the case in the PEP, see the rejected idea [PEP reference omitted] for more details, a precedence that matches that of <code>and</code> and <code>or</code> more closely makes the most sense.</p>\n<p>In practice, do I suspect developers will use something like <code>a ?? b or c</code> without parentheses, not sure, I probably wouldn’t. Can it be confusing though: sure, but thats’s what voluntary groupings and linter rules <sup class=\"footnote-ref\"><a href=\"#footnote-305127-2\" id=\"footnote-ref-305127-2\">[2]</a></sup> are for, as suggested in the [PEP reference omitted] section.</p>\n<hr class=\"footnotes-sep\">\n\n<ol class=\"footnotes-list\">\n<li id=\"footnote-305127-1\" class=\"footnote-item\"><p>The alternative precedence we’ve been discussing above <a href=\"#footnote-ref-305127-1\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n<li id=\"footnote-305127-2\" class=\"footnote-item\"><p>I’d be surprised if <a href=\"https://docs.astral.sh/ruff/rules/parenthesize-chained-operators/\" rel=\"noopener nofollow ugc\">RUF021</a> wouldn’t be updated to require parentheses for <code>??</code> as well if the PEP is accepted. <a href=\"#footnote-ref-305127-2\" class=\"footnote-backref\">↩︎</a></p>\n</li>\n</ol>",
+      "id": "3397c94b6a1e25857875a96580676f53f10c2ad180a9e982ba7884443c455e93"
+    },
+    {
+      "external_id": "305128",
+      "post_number": 82,
+      "url": "https://discuss.python.org/t/109161/82",
+      "created_at": "2026-11-02T14:04:43.709Z",
+      "updated_at": "2026-11-02T14:04:43.709Z",
+      "author": "peterc",
+      "body": "<p>to me <code>user_name ?? default_name or \"Guest\"</code> looks wrong. <code>user_name ?? (default_name or \"Guest\")</code> looks ok, but still dubious. It raises the question: why can’t we use <code>user_name ?? default_name ?? \"Guest\"</code>? Why would we allow <code>default_name</code> to ever be <code>\"\"</code>?</p>\n<p>There might exist a compelling scenario which should decide whether ?? or or should bind stronger, but this isn’t it.</p>",
+      "id": "a54a71accb27ce69be5f87864e473dbcecdb81f8d79914f6c09736c58c064e74"
+    },
+    {
+      "external_id": "305137",
+      "post_number": 83,
+      "url": "https://discuss.python.org/t/109161/83",
+      "created_at": "2026-11-02T15:53:49.872Z",
+      "updated_at": "2026-11-02T15:53:49.872Z",
+      "author": "barry",
+      "body": "<aside class=\"quote no-group\" data-username=\"cdce8p\" data-display-name=\"Marc Mueller\" data-post=\"76\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/cdce8p/48/3575_2.png\" class=\"avatar\"> Marc Mueller:</div>\n<blockquote>\n<p>AI came up with this example, though I do think it illustrates the problem fairly well what would happen if the precedences for <code>or</code> and <code>??</code> were reversed</p>\n</blockquote>\n</aside>\n<p>I wouldn’t call this “breaking” so much as complicated logic that is difficult to express succinctly.  I don’t think the ability to use <code>??</code> with a compatible precendence order actually helps comprehending what the author’s intent is.  That’s what I generally mean as “readable”.  Can I, without the help of comments, easily grok not what the code <em>does</em> but what the author’s <em>intent</em> is?  Parentheses help, but don’t settle the matter to me.</p>\n<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"77\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>Since we appear to agree that <code>??</code> is <strong>a variant of</strong> <code>or</code>, why not give them the <strong>same</strong> priority?</p>\n</blockquote>\n</aside>\n<p>I thought the same thing, but as you point out, there’s a potential gotcha.</p>\n<aside class=\"quote group-committers\" data-username=\"Jelle\" data-display-name=\"Jelle Zijlstra\" data-post=\"78\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/jelle/48/1049_2.png\" class=\"avatar\"> Jelle Zijlstra:</div>\n<blockquote>\n<p>For what it’s worth I’d expect <code>??</code> to bind tighter than <code>or</code>.</p>\n</blockquote>\n</aside>\n<p>This is all great stuff that I really want to see in the PEP! <img src=\"https://emoji.discourse-cdn.com/apple/winking_face_with_tongue.png?v=16\" title=\":winking_face_with_tongue:\" class=\"emoji\" alt=\":winking_face_with_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>",
+      "id": "12ded0b5fc2fb76e1204b7a317d978366180fe3b6799f03c77b7d5f833b047d4"
+    },
+    {
+      "external_id": "305143",
+      "post_number": 84,
+      "url": "https://discuss.python.org/t/109161/84",
+      "created_at": "2026-11-02T16:21:49.633Z",
+      "updated_at": "2026-11-02T16:21:49.633Z",
+      "author": "guido",
+      "body": "<p>Agreed, this example is unrealistic and not helpful as a yardstick for different options.</p>",
+      "id": "9b3990b7540b0eea4d65c34bd10f770dd8fd68ef955b3421dd7b6600d3d22007"
+    },
+    {
+      "external_id": "305149",
+      "post_number": 85,
+      "url": "https://discuss.python.org/t/109161/85",
+      "created_at": "2026-11-02T17:15:25.612Z",
+      "updated_at": "2026-11-02T17:15:25.612Z",
+      "author": "cdce8p",
+      "body": "<p>I’m not sure we’re all taking about the same thing at the moment.</p>\n<ol>\n<li>Is it that the precedence section is missing a clear rational?</li>\n<li>Or that the precedence for <code>??</code> should be changed to something else? And if so to what?</li>\n</ol>\n<hr>\n<p>I agree that it’s not fully obvious in the PEP why the precedence should be <strong>exactly</strong> where it is. For context, the main decision I made while writing the PEP was that <code>??</code> should not be a binary operator like [PEP reference omitted] proposed it, but a boolean one instead. The rational for that is cleared stated in the rejected idea [PEP reference omitted] section. As a boolean operator, I chose to assume the precedence from JS, C# and Dart. <em>(Also mentioned at the end of the already mentioned rejected idea section.)</em> There wasn’t any reason for me to consider something else honestly and I don’t think Python needs to reinvent the wheel here either.</p>\n<p>To me the precedence makes sense like I tried to explain earlier, but it might very well just be convention.</p>",
+      "id": "45d01944164f73e98eed229a424f68ba21928dc4f0422aa312bcfdf11245645c"
+    },
+    {
+      "external_id": "305150",
+      "post_number": 86,
+      "url": "https://discuss.python.org/t/109161/86",
+      "created_at": "2026-11-02T17:36:08.397Z",
+      "updated_at": "2026-11-02T17:36:08.397Z",
+      "author": "guido",
+      "body": "<aside class=\"quote no-group\" data-username=\"cdce8p\" data-display-name=\"Marc Mueller\" data-post=\"85\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/cdce8p/48/3575_2.png\" class=\"avatar\"> Marc Mueller:</div>\n<blockquote>\n<p>I’m not sure we’re all taking about the same thing at the moment.</p>\n</blockquote>\n</aside>\n<p>I think we’re trying a way to make Barry happy with the PEP (without disappointing the author). That could either be an argument for “weaker than <code>or</code>” (possibly with a more appealing example), or a change in the spec that satisfies everyone.</p>\n<p>I would personally be happy if the parser required parentheses whenever <code>??</code> and <code>or</code> appear next to each other – and for all I care also when <code>??</code> and <code>and</code> appear together. That would be the JS/TS approach, and given that other mainstream languages firmly disagree, it seems a wise choice.</p>\n<p>I’ll defer to Barry to explain the process for updating the PEP after it’s been submitted to the SC.</p>",
+      "id": "00a0a27c0de7070cfed416a19aebbaa8bb3c4991a7378858f185a10fdd142104"
+    },
+    {
+      "external_id": "305152",
+      "post_number": 87,
+      "url": "https://discuss.python.org/t/109161/87",
+      "created_at": "2026-11-02T18:18:52.760Z",
+      "updated_at": "2026-11-02T18:18:52.760Z",
+      "author": "guido",
+      "body": "<p>Another procedural idea: ask the SC to pick between two proposals (e.g. current PEP and JS/TS).</p>",
+      "id": "733fe90ef88d40b62833b1cf01a9d4981f290c3d854eac0832d1a07fd2348889"
+    },
+    {
+      "external_id": "305154",
+      "post_number": 88,
+      "url": "https://discuss.python.org/t/109161/88",
+      "created_at": "2026-11-02T18:57:49.861Z",
+      "updated_at": "2026-11-02T18:58:03.992Z",
+      "author": "barry",
+      "body": "<aside class=\"quote group-committers\" data-username=\"guido\" data-display-name=\"Guido van Rossum\" data-post=\"86\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/guido/48/21_2.png\" class=\"avatar\"> Guido van Rossum:</div>\n<blockquote>\n<p>I’ll defer to Barry to explain the process for updating the PEP after it’s been submitted to the SC.</p>\n</blockquote>\n</aside>\n<p>The PEP was just submitted to the SC so we haven’t even officially started discussing it.  There were some informal chats at the core sprint, but we still need to put it on our agenda (could happen at this Thursday’s regular meeting).</p>\n<p>One piece of feedback I would give to the authors <img src=\"https://emoji.discourse-cdn.com/apple/wink.png?v=16\" title=\":wink:\" class=\"emoji\" alt=\":wink:\" loading=\"lazy\" width=\"20\" height=\"20\"> would be to include the rationale for <em>why</em> the specific precedence order the authors propose was chosen.  I want to be able to say “the authors thought about the different options, settled on option X for the reasons given”.</p>\n<p>I might have expressed a personal preference, but I’m quite possibly wrong! given the competing options and their rationales.  So don’t make a change to appease me, just explain in the PEP why you made the deliberate choice you made.  If given the discussion in the thread <em>you</em> think a different choice should be made, then it’s okay to change your mind.</p>\n<p>If you can update the PEP in the next day or two, it’s probably fine.</p>",
+      "id": "f6539129428c7ac8c6edf786ae6f058c316e86b884bcdc4fde38e641bb8063d5"
+    },
+    {
+      "external_id": "305212",
+      "post_number": 89,
+      "url": "https://discuss.python.org/t/109161/89",
+      "created_at": "2026-11-02T23:18:13.991Z",
+      "updated_at": "2026-11-02T23:18:13.991Z",
+      "author": "guido",
+      "body": "<aside class=\"quote group-committers\" data-username=\"barry\" data-display-name=\"Barry Warsaw\" data-post=\"88\" data-topic=\"109161\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://sea2.discourse-cdn.com/flex002/user_avatar/discuss.python.org/barry/48/42_2.png\" class=\"avatar\"> Barry Warsaw:</div>\n<blockquote>\n<p>If you can update the PEP in the next day or two, it’s probably fine.</p>\n</blockquote>\n</aside>\n<p>Okay, we’ll shoot for that. Just to be sure, when the updated version has landed, we’ll ping the existing pep 824 issue in the SC’s tracker.</p>",
+      "id": "fa0f338a6f840ef20a15c4eb56391d874cd4c47791343ac0d1451b86dce085a9"
+    },
+    {
+      "external_id": "305216",
+      "post_number": 90,
+      "url": "https://discuss.python.org/t/109161/90",
+      "created_at": "2026-11-02T23:41:41.906Z",
+      "updated_at": "2026-11-02T23:41:41.906Z",
+      "author": "barry",
+      "body": "<p>Thanks, sounds great!</p>",
+      "id": "3f8b819109920b57130f88eb4419c2138d80939d3af70b7aa14f82fc085a6267"
+    },
+    {
+      "external_id": "305357",
+      "post_number": 91,
+      "url": "https://discuss.python.org/t/109161/91",
+      "created_at": "2026-11-04T17:57:22.989Z",
+      "updated_at": "2026-11-04T17:57:22.989Z",
+      "author": "guido",
+      "body": "<p>PEP 824 has been updated with an [PEP reference omitted] (in the Rejected Ideas section).</p>",
+      "id": "2d39e4803b4fe22fc9c0e8b8acffd588e722b7d765468f3e54451d08411aed57"
+    },
+    {
+      "external_id": "305359",
+      "post_number": 92,
+      "url": "https://discuss.python.org/t/109161/92",
+      "created_at": "2026-11-04T18:36:48.588Z",
+      "updated_at": "2026-11-04T18:36:48.588Z",
+      "author": "ThomasP",
+      "body": "<p>FWIW, the precedence of <code>or</code> being greater than <code>??</code> is confusing for me.  <code>x ?? y or z</code>, we evaluate if x is None, if it isn’t evaluate <code>y or z</code>.  I’d think it pretty rare that we’d want to keep a Falsy but not None value for x, and so I see the or as a Falsy check over the whole thing.  Might just be a consequence of not having to reason about another short circuiting operator.</p>\n<p>Though we should use parens regardless, so this should be moot.</p>",
+      "id": "b72fa08efdefc562c6b508e21fa93bb81d0c6c9b0e83c69a58ef6641835e1427"
+    }
+  ],
+  "sha256": "b3f2523cf13590a44701ebcf8651f1f5567be0539b21f748bb5d60d58c29af43"
+}

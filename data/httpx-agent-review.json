@@ -1,0 +1,70 @@
+{
+  "provenance": "Agent-assisted reconstruction from GitHub API records, not an OpenRouter extraction run. Every record remains needs_review. Quotes are deterministically validated before persistence.",
+  "candidates": [
+    {
+      "number": 572,
+      "key": "synchronous-top-level-convenience-api",
+      "title": "Keep top-level convenience calls synchronous",
+      "claim": "In the synchronous-support redesign, the maintainer chose a synchronous top-level convenience API and required an explicit client instance for asynchronous use. The proposed aget-style convenience names were not retained because they would not mirror the client methods.",
+      "scope": "Historical API design discussion in #572; this reconstruction does not assert present-day API names or behavior.",
+      "status": "accepted",
+      "evidence": [{"url": "https://github.com/encode/httpx/issues/572#issuecomment-562527739", "quote": "@florimondmanca made a good point about `aget()` etc not mirroring the client methods, so I think we'll just keep things really simple. Standard ol' thread-concurrency API for the top level convienence case, great with the REPL etc."}, {"url": "https://github.com/encode/httpx/issues/572#issuecomment-562527739", "quote": "There's no good enough reason to support async without an explicit client instance."}],
+      "alternatives": [{"approach": "Expose asynchronous top-level convenience calls such as aget()", "status": "rejected", "rationale": "The proposed names would not mirror the client methods, and the maintainer saw no sufficient reason for async use without an explicit client.", "evidence": [{"url": "https://github.com/encode/httpx/issues/572#issuecomment-562527739", "quote": "@florimondmanca made a good point about `aget()` etc not mirroring the client methods, so I think we'll just keep things really simple."}, {"url": "https://github.com/encode/httpx/issues/572#issuecomment-562527739", "quote": "There's no good enough reason to support async without an explicit client instance."}]}],
+      "open_questions": [], "possible_supersession": []
+    },
+    {
+      "number": 522,
+      "key": "remove-sync-async-bridge",
+      "title": "Remove the synchronous facade over async internals",
+      "claim": "The maintainer reported the removal released in 0.8, criticizing the existing sync approach for making the API and implementation poorer. A later comment in the same discussion pointed to #572 and a replacement based on regular synchronous calls and sockets rather than hidden async behavior.",
+      "scope": "The removal and later proposed replacement of the historical sync bridge, not a claim that HTTPX currently lacks synchronous support.",
+      "status": "superseded",
+      "evidence": [{"url": "https://github.com/encode/httpx/issues/522#issuecomment-559098144", "quote": "Done, and released as 0.8."}, {"url": "https://github.com/encode/httpx/issues/522#issuecomment-559098144", "quote": "it's making the API & implementation significantly poorer."}, {"url": "https://github.com/encode/httpx/issues/522#issuecomment-559973013", "quote": "We'll also be using regular ol' function calls and sync socket operations in the sync case, rather than hiding async stuff underneath a sync facade."}],
+      "alternatives": [{"approach": "Keep the prior synchronous facade backed by async operations", "status": "rejected", "rationale": "The maintainer considered the previous approach harmful to API and implementation quality.", "evidence": [{"url": "https://github.com/encode/httpx/issues/522#issuecomment-559098144", "quote": "I'd can see us coming back to covering sync at a later date, but I just don't dig our approach onto it right now - it's making the API & implementation significantly poorer."}]}],
+      "open_questions": ["The exact release that completed the replacement is not established by these excerpts."], "possible_supersession": ["Issue #572 proposes a different synchronous implementation approach."]
+    },
+    {
+      "number": 717,
+      "key": "reject-global-json-customization",
+      "title": "Reject global state for JSON customization",
+      "claim": "The maintainer opposed JSON customization APIs that use global state. The stated concern was that installing a dependency could silently change another API client's JSON behavior at a distance.",
+      "scope": "The global-state constraint expressed in #717; a non-global customization proposal remained distinct from an implemented feature.",
+      "status": "accepted",
+      "evidence": [{"url": "https://github.com/encode/httpx/issues/717#issuecomment-1711514668", "quote": "I can't see myself doing anything other than veto'ing proposals that use a form of global state"}, {"url": "https://github.com/encode/httpx/issues/717#issuecomment-1711492210", "quote": "Installing a new dependancy to your project could end up altering the behaviour of an API client without that being visible anywhere obvious in the project codebase."}],
+      "alternatives": [{"approach": "Set JSON handlers globally through a shared configuration function", "status": "rejected", "rationale": "Global configuration could introduce distant, non-obvious changes to API client behavior when dependencies are installed.", "evidence": [{"url": "https://github.com/encode/httpx/issues/717#issuecomment-1711492210", "quote": "The issue with that approach is that you introduce subtly different JSON handling at a distance. Installing a new dependancy to your project could end up altering the behaviour of an API client without that being visible anywhere obvious in the project codebase."}]}],
+      "open_questions": ["These excerpts do not establish that the alternative request/response-class proposal was implemented."], "possible_supersession": []
+    },
+    {
+      "number": 1522,
+      "key": "httpx-owned-low-level-transport-api",
+      "title": "Own the custom transport API inside HTTPX",
+      "claim": "The PR describes moving custom transport subclassing to HTTPX BaseTransport and AsyncBaseTransport, with a primitive low-level boundary that separates the HTTPX API from network handling. The maintainer explicitly endorsed proceeding with the change.",
+      "scope": "Historical PR #1522. Its edited description explicitly incorporates follow-up #1550; this card does not claim the description is an untouched snapshot of the initial patch.",
+      "status": "accepted",
+      "evidence": [{"url": "https://github.com/encode/httpx/pull/1522", "quote": "You should either subclass `httpx.BaseTransport` to implement a transport to use with `Client`, or subclass `httpx.AsyncBaseTransport` to implement a transport to use with `AsyncClient`."}, {"url": "https://github.com/encode/httpx/pull/1522", "quote": "This strict point of cut-off provides a clear design separation between the HTTPX API, and the low-level network handling."}, {"url": "https://github.com/encode/httpx/pull/1522#issuecomment-805785353", "quote": "Ace, let's do this."}],
+      "alternatives": [{"approach": "Document custom transports as subclasses of httpcore.SyncHTTPTransport", "status": "rejected", "rationale": "The PR identified that exposed transport contract as the exception to treating httpcore as an implementation detail.", "evidence": [{"url": "https://github.com/encode/httpx/pull/1522", "quote": "Almost all the way through `httpcore` is treated as an implementation detail, that just happens to be used by the default transport implementation, `httpx.HTTPTransport`."}, {"url": "https://github.com/encode/httpx/pull/1522", "quote": "The one place where this isn't the case is in our \"Transport API\". In that case we're explicitly documenting \"subclass httpcore.SyncHTTPTransport and implement it's API\"."}]}],
+      "open_questions": [], "possible_supersession": ["PR #1550 is explicitly incorporated into the edited source description."]
+    },
+    {
+      "number": 2252,
+      "key": "replace-rfc3986-with-internal-parser",
+      "title": "Replace rfc3986 with an internal URL parser",
+      "claim": "The PR proposes removing the rfc3986 dependency in favor of an internal urlparse implementation. The author argued that removing indirection lowered overall complexity despite adding local code. A later maintainer comment judged the change ready and called for a version bump because it removes a dependency.",
+      "scope": "The rationale and approval expressed in PR #2252; current parser behavior is not inferred from the historical discussion.",
+      "status": "accepted",
+      "evidence": [{"url": "https://github.com/encode/httpx/pull/2252", "quote": "This pull request drops the `rfc3986` package dependancy, in favour of a carefully worked through `urlparse` implementation, that provides everything we need in terms of URL validation and normalisation."}, {"url": "https://github.com/encode/httpx/pull/2252", "quote": "Although this adds some additional code, it also completely removes a dependancy, and is lower overall-complexity."}, {"url": "https://github.com/encode/httpx/pull/2252#issuecomment-1375687320", "quote": "Looks ready to go from my side."}, {"url": "https://github.com/encode/httpx/pull/2252#issuecomment-1375687320", "quote": "There's no breaking public API changes here, but since it removes a dependency I'd consider it as committing us to a proper version bump."}],
+      "alternatives": [{"approach": "Retain the rfc3986 dependency for parsing and normalization", "status": "rejected", "rationale": "The author considered the existing integration indirect and awkward in places, and found the internal implementation clearer to understand.", "evidence": [{"url": "https://github.com/encode/httpx/pull/2252", "quote": "I think the `rfc3986` package is fantastic, but we were having to do a few bits in some slightly kludgy ways to use it, and without the indirection I find it much clearer to work all the way through what's actually going on here."}]}],
+      "open_questions": [], "possible_supersession": []
+    },
+    {
+      "number": 1450,
+      "key": "total-timeout-remains-proposal",
+      "title": "Keep overall response timeouts as an unresolved design",
+      "claim": "The maintainer expressed interest in total-request timeouts and placed implementation work in httpcore, while recommending async timeout primitives for asyncio and trio. The selected excerpts establish a design direction, not that a total-timeout API shipped.",
+      "scope": "Discussion #1450, including the distinction between async cancellation and the synchronous case. No implementation claim is made.",
+      "status": "unresolved",
+      "evidence": [{"url": "https://github.com/encode/httpx/issues/1450#issuecomment-1924089766", "quote": "The implementation for this would be in `httpcore` - I'd be happy to help guide someone through a PR there."}, {"url": "https://github.com/encode/httpx/issues/1450#issuecomment-1936695896", "quote": "Using async primitives for timeouts is the sensible approach for the `asyncio` and `trio` cases."}, {"url": "https://github.com/encode/httpx/issues/1450#issuecomment-1936695896", "quote": "Implementing total-request-timeouts would mostly be beneficial for *the sync case*, since there's no cancellation semantics available to us with threaded code."}],
+      "alternatives": [], "open_questions": ["Whether, when, and under which API an overall timeout was implemented is not established here."], "possible_supersession": []
+    }
+  ]
+}
