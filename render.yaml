@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: watermelon-api-worker
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.backend
+    dockerContext: .
+    dockerCommand: .venv/bin/python scripts/render_service.py
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: OWNER_ID
+        value: watermelon-owner
+      - key: GITHUB_PUBLISH_ENABLED
+        value: "false"
+      - key: DISCOURSE_ORIGINS
+        value: https://discuss.python.org
+      - key: MODEL_CALLS_PER_DAY
+        value: "30"
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: API_SERVICE_TOKEN
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        sync: false
+      - key: OPENROUTER_VERIFY_MODEL
+        sync: false
+      - key: OPENROUTER_EMBEDDING_MODEL
+        sync: false
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_APP_ID
+        sync: false
+      - key: GITHUB_APP_PRIVATE_KEY
+        sync: false
+      - key: GITHUB_INSTALLATION_ID
+        sync: false
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
